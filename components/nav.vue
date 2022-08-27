@@ -2,18 +2,16 @@
   <div class="Navigation">
     <div class="Navigation__inner">
       <div class="Navigation__inner--cell Navigation__inner--cell-left">
-        <img class="Navigation__inner--logo" :src="logo" alt="logo" @click="$router.push('/')" />
-      </div>
-      <div class="Navigation__inner--cell Navigation__inner--cell-center">
-        <transition name="fade">
-          <Search v-if="loggedIn" class="search" />
-        </transition>
+        <div class="row">
+          <img class="Navigation__inner--logo" :src="logo" alt="logo" @click="$router.push('/')" />
+          <p>The Faucet</p>
+        </div>
       </div>
       <transition name="fade">
-        <div v-if="loggedIn" class="Navigation__inner--cell Navigation__inner--cell-right">
-          <ButtonOutlined v-if="!correctNetwork" text="Change Network" @click.native="changeNetwork">
+        <div class="Navigation__inner--cell Navigation__inner--cell-right">
+          <ButtonPrimary v-if="!correctNetwork" text="Change Network" @click.native="changeNetwork">
             <span class="material-icons-outlined"> error_outline </span>
-          </ButtonOutlined>
+          </ButtonPrimary>
           <ButtonPrimary
             v-if="correctNetwork && !accounts"
             text="Connect"
@@ -38,7 +36,7 @@
 </template>
 <script>
 import Vue from 'vue'
-// import logo from '@/assets/images/logo.png'
+import logo from '@/assets/icons/logo.png'
 
 export default Vue.extend({
   name: 'NavBar',
@@ -60,9 +58,6 @@ export default Vue.extend({
       const name = this.$route.name
       return name
     },
-    loggedIn() {
-      return this.$store.getters['auth/loggedIn']
-    },
   },
   methods: {
     async changeNetwork() {
@@ -78,13 +73,15 @@ export default Vue.extend({
 .Navigation {
   width: 100%;
   user-select: none;
+  color: black;
   &__inner {
     @extend .max-width-wrapper;
     width: 100%;
     height: 6.75rem;
     padding: 3.75rem 5rem 0rem 5rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     &--cell {
       display: flex;
       align-items: center;
@@ -121,5 +118,10 @@ export default Vue.extend({
 }
 .close {
   font-size: 1rem;
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 </style>

@@ -3,13 +3,13 @@ import { ethers } from 'ethers'
 export const state = () => ({
   accounts: null,
   network: null,
+  dripBalance: null,
   binanceSmartChain: {
     chainName: 'Binance Smart Chain',
-    // chainId: ethers.utils.stripZeros(ethers.utils.hexlify(80001)),
-    chainId: '0x13881',
-    nativeCurrency: { name: 'MATIC', decimals: 18, symbol: 'MATIC' },
-    rpcUrls: ['https://rpc-mumbai.maticvigil.com'],
-    blockExplorerUrls: ['https://mumbai.polygonscan.com'],
+    chainId: ethers.utils.hexlify(56),
+    nativeCurrency: { name: 'BNB', decimals: 8, symbol: 'BNB' },
+    rpcUrls: ['https://bsc-dataseed1.binance.org'],
+    blockExplorerUrls: ['https://bscscan.com'],
   },
 })
 
@@ -19,6 +19,9 @@ export const mutations = {
   },
   setNetwork: (state, network) => {
     state.network = network
+  },
+  setDripBalance: (state, _balance) => {
+    state.dripBalance = _balance
   },
 }
 
@@ -45,7 +48,7 @@ export const actions = {
     if (!window.ethereum) throw new Error('Please Use a Web3 Enabled Browser!')
     await window.ethereum.request({
       method: 'wallet_addEthereumChain',
-      params: [state.mumbai],
+      params: [state.binanceSmartChain],
     })
   },
   async connectWallet({ commit, getters, dispatch }) {
@@ -55,19 +58,23 @@ export const actions = {
     commit('setAccounts', accounts)
     dispatch('fetchBalances')
   },
-  // async getUsdcBalance({ commit, state, getters }) {
-  //   const { accounts } = state
-  //   const { provider } = getters
+  async fetchBalances({ dispatch }) {
+    await dispatch('getDripBalance')
+  },
 
-  //   const abi = require(`@/contracts/abi/USDC_TOKEN.json`)
-  //   const contractAddress = process.env.USDCTOKEN
-  //   const contract = new ethers.Contract(contractAddress, abi, provider)
-  //   const decimals = await contract.decimals()
-  //   const balance = await contract.balanceOf(accounts[0])
-  //   const formattedBalance = ethers.utils.formatUnits(balance, decimals)
-  //   const _usdcBalance = parseFloat(formattedBalance)
-  //   commit('setUsdcBalance', _usdcBalance)
-  // },
+  async getDripBalance({ commit, state, getters }) {
+    const { accounts } = state
+    const { provider } = getters
+
+    const abi = require(`@/abi/drip.json`)
+    const contractAddress = process.env.DRIPTOKEN
+    const contract = new ethers.Contract(contractAddress, abi, provider)
+    const decimals = await contract.decimals()
+    const balance = await contract.balanceOf(accounts[0])
+    const formattedBalance = ethers.utils.formatUnits(balance, decimals)
+    const dripBalance = parseFloat(formattedBalance)
+    commit('setDripBalance', dripBalance)
+  },
   // async approveUsdc({ state, getters }, amount) {
   //   const { tokenPrice } = state
   //   const { provider } = getters
@@ -85,14 +92,14 @@ export const actions = {
   disconnect({ commit }) {
     if (window?.ethereum?.disconnect) window.ethereum.disconnect()
     commit('setAccounts', null)
+    commit('setDripBalance', null)
   },
 }
 
 export const getters = {
   correctNetwork: (state) => {
-    const { network, mumbai } = state
-    // chainId from network comes back as int
-    return network?.chainId === parseInt(mumbai?.chainId)
+    const { network, binanceSmartChain } = state
+    return network?.chainId === parseInt(binanceSmartChain?.chainId)
   },
   provider: () => {
     return new ethers.providers.Web3Provider(window.ethereum)
@@ -102,5 +109,8 @@ export const getters = {
   },
   accounts: (state) => {
     return state.accounts
+  },
+  dripBalance: (state) => {
+    return state.dripBalance
   },
 }

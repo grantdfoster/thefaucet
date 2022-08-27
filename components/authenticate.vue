@@ -1,50 +1,29 @@
 <template>
   <div class="modal">
-    <DashboardTemplate>
-      <div class="modal__panel">
-        <div class="modal__panel--close" @click="emit('close')">
-          <span class="material-icons-outlined"> close </span>
-        </div>
-        <div v-if="!showEmail" class="modal__panel--web3">
-          <h3 class="titletext">Connect</h3>
-          <ButtonOutlinedBefore text="Metamask" @click.native="connect">
-            <img class="icons" src="~/assets/icons/metamask.png" />
-          </ButtonOutlinedBefore>
-          <ButtonOutlinedBefore text="WalletConnect" @click.native="stub">
-            <img class="icons" src="~/assets/icons/walletconnect.png" />
-          </ButtonOutlinedBefore>
-          <ButtonOutlinedBefore text="Coinbase" @click.native="stub">
-            <img class="icons" src="~/assets/icons/coinbase.png" />
-          </ButtonOutlinedBefore>
-          <a class="toggle" @click="showEmail = true">Login with Email</a>
-        </div>
-        <div v-else class="modal__panel--email">
-          <h3 class="titletext">Login</h3>
-          <div>
-            <p class="description">Email</p>
-            <input v-model="email" type="text" class="input" placeholder="Email" />
-          </div>
-          <div>
-            <p class="description">Password</p>
-            <input v-model="password" type="password" class="input" placeholder="Password" />
-          </div>
-          <ButtonPrimary text="Log In" @click.native="logInEmail" />
-          <a class="toggle" @click="showEmail = false">Login with Web3</a>
-        </div>
+    <div class="modal__panel">
+      <div class="modal__panel--close" @click="emit('close')">
+        <span class="material-icons-outlined"> close </span>
       </div>
-    </DashboardTemplate>
+      <div class="modal__panel--web3">
+        <h3 class="titletext">Connect</h3>
+        <ButtonPrimary text="Metamask" @click.native="connect">
+          <img class="icons" src="~/assets/icons/metamask.png" />
+        </ButtonPrimary>
+        <ButtonPrimary text="WalletConnect" @click.native="stub">
+          <img class="icons" src="~/assets/icons/walletconnect.png" />
+        </ButtonPrimary>
+        <ButtonPrimary text="Coinbase" @click.native="stub">
+          <img class="icons" src="~/assets/icons/coinbase.png" />
+        </ButtonPrimary>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { useContext, useStore, ref } from '@nuxtjs/composition-api'
+import { useContext, useStore } from '@nuxtjs/composition-api'
 const { $toast } = useContext()
 const store = useStore()
-
-// refs
-const showEmail = ref(false)
-const email = ref('')
-const password = ref('')
 
 const emit = defineEmits(['close'])
 
@@ -61,19 +40,6 @@ const connect = async () => {
     console.error(e)
     $toast.error(e).goAway(5000)
   }
-}
-
-// connect with email!
-const logInEmail = () => {
-  if (!email.value || !password.value) {
-    return $toast.error('Please provide credentials!').goAway(3000)
-  }
-  const body = {
-    email: email.value,
-    password: password.value,
-  }
-  console.log('logging in with email...', body)
-  $toast.info('Coming Soon!').goAway(3000)
 }
 </script>
 

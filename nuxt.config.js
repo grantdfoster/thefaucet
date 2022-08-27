@@ -2,7 +2,8 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   ssr: false, // Disable Server Side rendering
   env: {
-    FAUCETCONTRACT: process.env.NODE_ENV === process.env.FAUCETCONTRACT,
+    DRIPTOKEN: process.env.DRIPTOKEN,
+    FAUCETCONTRACT: process.env.FAUCETCONTRACT,
   },
   server: {
     port: '3000',

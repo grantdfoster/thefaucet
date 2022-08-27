@@ -1,5 +1,8 @@
 <template>
-  <Nuxt />
+  <div>
+    <Nav />
+    <Nuxt />
+  </div>
 </template>
 
 <style lang="scss">
