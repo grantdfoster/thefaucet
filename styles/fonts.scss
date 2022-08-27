@@ -1,0 +1,66 @@
+// bold
+@font-face {
+  font-family: 'NewGrotesk';
+  src: url('~/assets/fonts/NewGrotesk-Bold.ttf') format('truetype');
+  font-weight: 600 800;
+  font-style: normal;
+}
+
+// medium
+@font-face {
+  font-family: 'NewGrotesk';
+  src: url('~/assets/fonts/NewGrotesk-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+// regular
+@font-face {
+  font-family: 'NewGrotesk';
+  src: url('~/assets/fonts/NewGrotesk-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+// light
+@font-face {
+  font-family: 'NewGrotesk';
+  src: url('~/assets/fonts/NewGrotesk-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+// bold
+@font-face {
+  font-family: 'TTSupermolotNeue';
+  src: url('~/assets/fonts/TTSupermolotNeue-Bold.ttf') format('truetype');
+  font-weight: 600 800;
+  font-style: normal;
+}
+
+// medium
+@font-face {
+  font-family: 'TTSupermolotNeue';
+  src: url('~/assets/fonts/TTSupermolotNeue-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+// regular
+@font-face {
+  font-family: 'TTSupermolotNeue';
+  src: url('~/assets/fonts/TTSupermolotNeue-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+// light
+@font-face {
+  font-family: 'TTSupermolotNeue';
+  src: url('~/assets/fonts/TTSupermolotNeue-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+$primary-font: 'TTSupermolotNeue', Helvetica, Arial, sans-serif;
+$secondary-font: 'NewGrotesk', Helvetica, Arial, sans-serif;
