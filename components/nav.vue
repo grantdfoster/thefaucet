@@ -38,7 +38,7 @@
 </template>
 <script>
 import Vue from 'vue'
-import logo from '@/assets/images/logo.png'
+// import logo from '@/assets/images/logo.png'
 
 export default Vue.extend({
   name: 'NavBar',

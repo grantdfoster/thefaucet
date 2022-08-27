@@ -44,7 +44,7 @@ const props = defineProps({
       top: 50%;
       right: 1.3125rem;
       transform: translateY(-50%) rotate(90deg);
-      background-image: url('~/assets/icons/more/back.png');
+      background-image: url('~/assets/icons/back.png');
       background-repeat: no-repeat;
       background-size: contain;
       width: 0.5625rem;
