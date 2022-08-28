@@ -3,6 +3,8 @@ import { ethers } from 'ethers'
 export const state = () => ({
   accounts: null,
   network: null,
+  faucetAddress: '0xFFE811714ab35360b67eE195acE7C10D93f89D8C',
+  dripAddress: '0x20f663CEa80FaCE82ACDFA3aAE6862d246cE0333',
   dripBalance: null,
   binanceSmartChain: {
     chainName: 'Binance Smart Chain',
@@ -63,12 +65,11 @@ export const actions = {
   },
 
   async getDripBalance({ commit, state, getters }) {
-    const { accounts } = state
+    const { accounts, dripAddress } = state
     const { provider } = getters
 
     const abi = require(`@/abi/drip.json`)
-    const contractAddress = process.env.DripAddress
-    const contract = new ethers.Contract(contractAddress, abi, provider)
+    const contract = new ethers.Contract(dripAddress, abi, provider)
     const decimals = await contract.decimals()
     const balance = await contract.balanceOf(accounts[0])
     const formattedBalance = ethers.utils.formatUnits(balance, decimals)
