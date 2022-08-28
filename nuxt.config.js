@@ -1,10 +1,6 @@
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   ssr: false, // Disable Server Side rendering
-  env: {
-    DripAddress: process.env.DripAddress,
-    FaucetAddress: process.env.FaucetAddress,
-  },
   server: {
     port: '3000',
   },
@@ -61,5 +57,8 @@ export default {
   },
   styleResources: {
     scss: ['./styles/main.scss', './styles/fonts.scss'],
+  },
+  env: {
+    buddyAddress: process.env.buddyAddress,
   },
 }

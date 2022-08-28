@@ -165,26 +165,23 @@ const slickSettings = reactive({
   position: fixed;
   left: 50vw;
   transform: translateX(-50%);
-  height: 3rem;
-  padding: 0 0.5rem 0.75rem;
+  padding: 0.5rem 0.75rem;
   color: rgb(115, 115, 115);
   border-radius: 0.75rem;
   bottom: -0.5rem;
   transition: 0.5s bottom ease-in-out;
   z-index: 100;
   box-shadow: $box-shadow-default;
-  @extend .figma-glass;
+  @extend .white-glass;
   &__basic {
-    // width: 27.875rem;
     height: 2.75rem;
     padding: 0.5rem 3rem 1rem 3rem;
     display: flex;
     justify-content: center;
     cursor: pointer;
     transition: 0.3s all ease-in-out;
-
     &:hover {
-      transform: scale(1.03);
+      transform: scale($zoom-default);
     }
   }
   &__inner {
@@ -196,7 +193,7 @@ const slickSettings = reactive({
   }
   &__active {
     bottom: 4rem;
-    padding: 0 0.5rem;
+    padding: 0.5rem 0.75rem;
   }
   &__light {
     background: rgba(255, 255, 255, 0.1);
@@ -209,29 +206,23 @@ const slickSettings = reactive({
   justify-content: center;
   transition: all 0.3s ease-in-out;
   height: 100%;
-  &__current {
-    transform: translateY(-1.5rem);
-    z-index: 100;
-    position: relative;
-  }
   &__icon {
     transition: all 0.3s ease-in-out;
-
     cursor: pointer;
-    font-size: 2rem;
+    font-size: 1.5rem;
     &.selected {
       font-size: 2.5rem;
       color: black;
     }
     &.hovered {
-      font-size: 2.3rem;
+      font-size: 2rem;
       color: black;
     }
   }
 }
 
 .messaging {
-  color: black;
+  color: $gray-default;
   -webkit-user-select: none; /* Safari */
   -moz-user-select: none; /* Firefox */
   -ms-user-select: none; /* IE10+/Edge */

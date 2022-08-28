@@ -25,7 +25,7 @@ const props = defineProps({
   justify-content: center;
   cursor: pointer;
   box-shadow: $box-shadow-default;
-  @extend .figma-glass;
+  @extend .white-glass;
   transition: 0.3s all ease-in-out;
   z-index: 100;
   &:hover {

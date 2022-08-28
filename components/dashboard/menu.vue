@@ -1,5 +1,5 @@
 <template>
-  <div id="menu-panel">
+  <div ref="panel">
     <DashboardTemplate class="about">
       <transition name="fade">
         <DashboardClose v-show="!props.changing && props.active" @click.native="$emit('close')" />
@@ -16,22 +16,17 @@
 </template>
 
 <script setup>
-import { useContext, onMounted, onBeforeUnmount, ref } from '@nuxtjs/composition-api'
+import { onMounted, onBeforeUnmount, ref } from '@nuxtjs/composition-api'
 
 const intervalId = ref(null)
-
-const { $toast } = useContext()
-
-const stub = () => {
-  $toast.info('Coming Soon!').goAway(3000)
-}
 
 const scale = (number, inMin, inMax, outMin, outMax) => {
   return ((number - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
 }
+const panel = ref('panel')
 
 const eventListener = () => {
-  const _panel = document.getElementById('menu-panel')
+  const _panel = panel.value
   const _centerOfPanelX = _panel.getBoundingClientRect().left + _panel.getBoundingClientRect().width / 2
   const _centerOfWindow = window.innerWidth / 2
 

@@ -23,25 +23,14 @@ const props = defineProps({
   border: none;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
-  background-size: 200% auto;
-  box-shadow: $box-shadow-default;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  height: 2.875rem;
-  background: linear-gradient(142.61deg, #ffffff 3.84%, #d8d8d8 95.81%);
-  transition: 0.3s all ease-in-out;
+  gap: 0.75rem;
+  min-height: 3rem;
+  // min-width: 10rem;
+  box-shadow: $box-shadow-shallow;
+  transition: all 0.3s cubic-bezier(0.2, 0.5, 0.2, 0.5);
+  background: linear-gradient(120deg, #ffffff 0%, #eeeeee 100%);
   &:hover {
-    transform: scale(1.03);
-  }
-  &:active {
-    transform: scale(1);
-  }
-  &__text {
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* IE10+/Edge */
-    user-select: none; /* Standard */
+    transform: scale($zoom-default);
   }
 }
 </style>

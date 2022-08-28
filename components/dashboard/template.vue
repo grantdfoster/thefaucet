@@ -19,7 +19,7 @@
 
   box-shadow: $box-shadow-default;
   border-radius: 1rem;
-  @extend .figma-glass;
+  @extend .white-glass;
   user-select: none;
 }
 // assumes corresponding panel is positioned relatively!

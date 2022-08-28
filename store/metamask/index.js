@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 
 export const state = () => ({
   accounts: null,
-  network: null,
+  networkConnected: null,
   faucetAddress: '0xFFE811714ab35360b67eE195acE7C10D93f89D8C',
   dripAddress: '0x20f663CEa80FaCE82ACDFA3aAE6862d246cE0333',
   dripBalance: null,
@@ -16,11 +16,11 @@ export const state = () => ({
 })
 
 export const mutations = {
-  setAccounts: (state, accounts) => {
-    state.accounts = accounts
+  setAccounts: (state, _accounts) => {
+    state.accounts = _accounts
   },
-  setNetwork: (state, network) => {
-    state.network = network
+  setNetworkConnected: (state, _network) => {
+    state.networkConnected = _network
   },
   setDripBalance: (state, _balance) => {
     state.dripBalance = _balance
@@ -30,14 +30,15 @@ export const mutations = {
 export const actions = {
   async initProvider({ commit, getters }) {
     // get and store the current network
+    // must freeze to place into store state
     const network = await getters.provider.getNetwork()
-    commit('setNetwork', Object.freeze(network))
+    commit('setNetworkConnected', Object.freeze(network))
 
     // catch a network change and reload the application if detected
     const providerListener = new ethers.providers.Web3Provider(window.ethereum, 'any')
 
-    providerListener.on('network', (_newNetwork, oldNetwork) => {
-      if (oldNetwork) {
+    providerListener.on('network', (_newNetwork, _oldNetwork) => {
+      if (_oldNetwork) {
         const delayTime = 1500
         this.app.$toast.info('Switching Networks...').goAway(delayTime)
         setTimeout(() => {
@@ -99,8 +100,8 @@ export const actions = {
 
 export const getters = {
   correctNetwork: (state) => {
-    const { network, binanceSmartChain } = state
-    return network?.chainId === parseInt(binanceSmartChain?.chainId)
+    const { networkConnected, binanceSmartChain } = state
+    return networkConnected?.chainId === parseInt(binanceSmartChain?.chainId)
   },
   provider: () => {
     return new ethers.providers.Web3Provider(window.ethereum)

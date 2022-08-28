@@ -17,14 +17,14 @@
             text="Connect"
             @click.native="() => (showAuthenticator = true)"
           />
-          <ButtonSecondary
+          <ButtonPrimary
             v-if="correctNetwork && accounts"
             :text="`${accounts[0].substring(0, 12)}...`"
             :class="`${routeName !== 'world' && routeName !== 'index' ? 'greyed' : ''}`"
             @click.native="disconnect"
           >
             <span class="material-icons-outlined close"> close </span>
-          </ButtonSecondary>
+          </ButtonPrimary>
         </div>
       </transition>
     </div>

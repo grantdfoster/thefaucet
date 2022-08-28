@@ -109,12 +109,13 @@ $backgroundColor: rgba(0, 0, 0, 0.5);
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 1));
 }
 
-.figma-glass {
-  // border: 0.0625rem solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(2rem);
-  background: linear-gradient(142.61deg, #ffffff7d 3.84%, #d8d8d881 95.81%);
+.white-glass {
+  backdrop-filter: blur(12px);
+  background: linear-gradient(120deg, #ffffff26 0%, #d8d8d829 100%);
 
 }
 
 $box-shadow-default: rgba(85, 85, 85, 0.2) 0px 7px 29px 0px;
+$box-shadow-shallow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 $gray-default: rgb(71, 71, 71);
+$zoom-default: 1.05;
