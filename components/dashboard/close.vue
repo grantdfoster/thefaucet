@@ -27,8 +27,9 @@ const props = defineProps({
   box-shadow: $box-shadow-default;
   @extend .figma-glass;
   transition: 0.3s all ease-in-out;
+  z-index: 100;
   &:hover {
-    transform: scale(1.03) translateY(-3rem);
+    transform: scale(1.1) translateY(-3rem);
   }
   &__icon {
     height: 1.5rem;

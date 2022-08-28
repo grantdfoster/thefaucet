@@ -172,7 +172,6 @@ const slickSettings = reactive({
   bottom: -0.5rem;
   transition: 0.5s bottom ease-in-out;
   z-index: 100;
-  // border: 1px solid rgb(83, 83, 83);
   box-shadow: $box-shadow-default;
   @extend .figma-glass;
   &__basic {
@@ -212,6 +211,8 @@ const slickSettings = reactive({
   height: 100%;
   &__current {
     transform: translateY(-1.5rem);
+    z-index: 100;
+    position: relative;
   }
   &__icon {
     transition: all 0.3s ease-in-out;
@@ -219,11 +220,11 @@ const slickSettings = reactive({
     cursor: pointer;
     font-size: 2rem;
     &.selected {
-      font-size: 3rem;
+      font-size: 2.5rem;
       color: black;
     }
     &.hovered {
-      font-size: 2.25rem;
+      font-size: 2.3rem;
       color: black;
     }
   }

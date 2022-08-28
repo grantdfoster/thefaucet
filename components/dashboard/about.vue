@@ -2,7 +2,7 @@
   <div id="about-panel">
     <DashboardTemplate class="about">
       <transition name="fade">
-        <DashboardClose v-show="!props.changing && props.active" :dark="true" @click.native="$emit('close')" />
+        <DashboardClose v-show="!props.changing && props.active" @click.native="$emit('close')" />
       </transition>
       <div class="inner">
         <div>
@@ -63,16 +63,13 @@ const props = defineProps({
 </script>
 <style lang="scss" scoped>
 .about {
-  user-select: none;
+  // user-select: none;
   outline: none;
 }
 .inner {
   border-radius: 1rem;
   width: 52.9375rem;
   padding: 2rem 2rem 4rem;
-  display: grid;
-  gap: 4rem;
-  grid-template-columns: 1fr 0.4fr;
 }
 .title {
   font-family: $primary-font;

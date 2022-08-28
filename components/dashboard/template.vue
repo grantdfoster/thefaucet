@@ -10,7 +10,7 @@
 
 <style lang="scss" scoped>
 .Panel {
-  color: gray;
+  color: $gray-default;
   position: relative;
   min-height: 20rem;
   min-width: 30rem; // just to see something...!
@@ -20,6 +20,7 @@
   box-shadow: $box-shadow-default;
   border-radius: 1rem;
   @extend .figma-glass;
+  user-select: none;
 }
 // assumes corresponding panel is positioned relatively!
 .custom-glow {

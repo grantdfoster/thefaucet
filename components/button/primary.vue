@@ -19,7 +19,7 @@ const props = defineProps({
   border-radius: 1rem;
   padding: 0.5rem 1rem;
   font-weight: 500;
-  color: black;
+  color: $gray-default;
   border: none;
   display: flex;
   align-items: center;

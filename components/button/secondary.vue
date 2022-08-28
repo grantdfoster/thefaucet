@@ -19,7 +19,7 @@ const props = defineProps({
   border-radius: 0.5rem;
   padding: 0.5rem 1.25rem;
   font-weight: 500;
-  color: black;
+  color: $gray-default;
   border: none;
   display: flex;
   align-items: center;
@@ -29,7 +29,7 @@ const props = defineProps({
   box-shadow: 0 0 1.25rem #eee;
   box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.12), 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.24);
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  background-image: linear-gradient(to right, #2bb1af 0%, #158482 51%, #0e7270 100%);
+  background-image: linear-gradient(to right, #ffffff 0%, #57a2be 100%);
   &:hover {
     background-position: right center;
   }
