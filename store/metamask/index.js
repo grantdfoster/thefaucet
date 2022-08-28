@@ -67,7 +67,7 @@ export const actions = {
     const { provider } = getters
 
     const abi = require(`@/abi/drip.json`)
-    const contractAddress = process.env.DRIPTOKEN
+    const contractAddress = process.env.DripAddress
     const contract = new ethers.Contract(contractAddress, abi, provider)
     const decimals = await contract.decimals()
     const balance = await contract.balanceOf(accounts[0])

@@ -26,7 +26,7 @@ const props = defineProps({
   justify-content: center;
   gap: 0.3rem;
   background-size: 200% auto;
-  box-shadow: 0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.12), 0 0.0625rem 0.125rem rgba(0, 0, 0, 0.24);
+  box-shadow: $box-shadow-default;
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   height: 2.875rem;
   background: linear-gradient(142.61deg, #ffffff 3.84%, #d8d8d8 95.81%);

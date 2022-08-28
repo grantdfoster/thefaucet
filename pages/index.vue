@@ -1,23 +1,19 @@
 <template>
-  <div class="PageContainer">
-    <p>Drip Balance: {{ dripBalance }}</p>
-  </div>
+  <div class="PageContainer"></div>
 </template>
 
 <script setup>
 import { onMounted, computed, useStore } from '@nuxtjs/composition-api'
-import { ethers } from 'ethers'
 
 const store = useStore()
 
-onMounted(() => {
-  const hex = ethers.utils.hexlify(56)
-  // const stripped = ethers.utils.stripZeros(ethers.utils.hexlify(56))
-  console.log('hex: ', hex)
+const provider = computed(() => {
+  return store.getters['metamask/provider']
 })
 
-const dripBalance = computed(() => {
-  return store.getters['metamask/dripBalance']
+onMounted(async () => {
+  const addresses = await provider.value.listAccounts()
+  if (addresses.length) store.dispatch('metamask/connectWallet')
 })
 </script>
 <style lang="scss" scoped></style>

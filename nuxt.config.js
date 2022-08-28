@@ -2,8 +2,8 @@ export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
   ssr: false, // Disable Server Side rendering
   env: {
-    DRIPTOKEN: process.env.DRIPTOKEN,
-    FAUCETCONTRACT: process.env.FAUCETCONTRACT,
+    DripAddress: process.env.DripAddress,
+    FaucetAddress: process.env.FaucetAddress,
   },
   server: {
     port: '3000',
@@ -29,11 +29,17 @@ export default {
     ],
     script: [],
   },
-  css: ['./styles/main.scss', './styles/fonts.scss'],
+  css: [
+    './styles/main.scss',
+    './styles/fonts.scss',
+    'vue-slick-carousel/dist/vue-slick-carousel.css',
+    'vue-slick-carousel/dist/vue-slick-carousel-theme.css',
+  ],
   plugins: [
     { src: './plugins/window.js', ssr: false },
     { src: './plugins/slider.js', ssr: false },
     { src: './plugins/metamask.js', ssr: false },
+    { src: './plugins/carousel.js', ssr: false },
   ],
   components: true,
   buildModules: ['@nuxtjs/composition-api/module', '@nuxt/typescript-build', '@nuxtjs/style-resources'],

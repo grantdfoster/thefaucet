@@ -96,7 +96,7 @@ $backgroundColor: rgba(0, 0, 0, 0.5);
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.8));
+  background: linear-gradient(to bottom, rgba(148, 148, 148, 0.1), rgba(159, 159, 159, 0.8));
 }
 
 .dark-gradient {
@@ -110,12 +110,11 @@ $backgroundColor: rgba(0, 0, 0, 0.5);
 }
 
 .figma-glass {
-  background: rgba(0, 0, 0, 0.35);
-  border: 0.0625rem solid rgba(255, 255, 255, 0.2);
+  // border: 0.0625rem solid rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(2rem);
+  background: linear-gradient(142.61deg, #ffffff7d 3.84%, #d8d8d881 95.81%);
+
 }
-.figma-glass-dark {
-  background: rgba(0, 0, 0, 0.75);
-  border: 0.0625rem solid rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(2rem);
-}
+
+$box-shadow-default: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+
