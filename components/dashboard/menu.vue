@@ -59,8 +59,6 @@ const props = defineProps({
 </script>
 <style lang="scss" scoped>
 .about {
-  user-select: none;
-  outline: none;
 }
 .inner {
   border-radius: 1rem;

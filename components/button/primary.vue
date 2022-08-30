@@ -25,7 +25,6 @@ const props = defineProps({
   align-items: center;
   gap: 0.75rem;
   min-height: 3rem;
-  // min-width: 10rem;
   box-shadow: $box-shadow-shallow;
   transition: all 0.3s cubic-bezier(0.2, 0.5, 0.2, 0.5);
   background: linear-gradient(120deg, #ffffff 0%, #eeeeee 100%);
