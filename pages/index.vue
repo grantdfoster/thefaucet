@@ -1,101 +1,128 @@
 <template>
   <div class="PageContainer">
+    <p class="deposits">Deposits: {{ deposits }}</p>
+    <p class="available">Availabe: {{ available }}</p>
     <svg id="svg"></svg>
   </div>
 </template>
 
 <script setup>
-import { onMounted, onBeforeUnmount, computed, useStore, ref } from '@nuxtjs/composition-api'
+import { onMounted, computed, useStore, ref } from '@nuxtjs/composition-api'
 import * as d3 from 'd3'
 
 const store = useStore()
 
-const radius = ref(10)
 const colorDefault = ref('#cce8ff')
 const colorHovered = ref('#a8d8ff')
-const availableDrips = ref(100)
+const animationDuration = ref(350)
 
-const availableDripsData = computed(() => {
-  const _array = Array.from(Array(availableDrips.value).keys())
-  return _array.map((_n, _i) => {
-    return { id: _i + 1, value: _i + 1 }
+const visualization = ref(null)
+const simulation = ref(null)
+
+const radius = ref(20)
+const padding = ref(0)
+const available = ref(10)
+const deposits = ref(100)
+
+const initVisualization = () => {
+  const svg = d3.select(document.getElementById('svg'))
+
+  simulation.value = d3
+    .forceSimulation()
+    .force('collide', d3.forceCollide(radius.value + padding.value).strength(1))
+    .force('x', d3.forceX(window.innerWidth / 2))
+    .force('y', d3.forceY(window.innerHeight / 2))
+    .on('tick', ticked)
+
+  let node = svg.append('g').attr('stroke', '#fff').attr('stroke-width', 1.5).selectAll('circle')
+
+  function ticked() {
+    node
+      .attr('cx', (d) => d.x)
+      .attr('cy', (d) => d.y)
+      .style('cursor', 'pointer')
+      .style('stroke', 'gray')
+      .style('stroke-width', '1px')
+      .attr('r', () => radius.value)
+      .attr('cx', (d) => d.x)
+      .attr('cy', (d) => d.y)
+      .attr('fill', () => colorDefault.value)
+      .on('mouseover', (event) => {
+        d3.select(event.currentTarget)
+          .transition()
+          .duration(animationDuration.value)
+          .attr('r', radius.value + padding.value)
+          .style('fill', colorHovered.value)
+      })
+      .on('mouseout', (event) => {
+        d3.select(event.currentTarget)
+          .transition()
+          .duration(animationDuration.value)
+          .attr('r', radius.value)
+          .style('fill', colorDefault.value)
+      })
+  }
+
+  visualization.value = Object.assign(svg.node(), {
+    update(nodes) {
+      // Make a shallow copy to protect against mutation, while
+      // recycling old nodes to preserve position and velocity.
+      const old = new Map(node.data().map((d) => [d.id, d]))
+      nodes = nodes.map((d) => Object.assign(old.get(d.id) || {}, d))
+
+      simulation.value.nodes(nodes)
+      simulation.value.alpha(1).restart()
+
+      node = node
+        .data(nodes, (d) => d.id)
+        .join((enter) => enter.append('circle').attr('r', radius.value).attr('fill', colorDefault.value))
+    },
   })
-})
-
-const createVisualization = () => {
-  const viz = d3.forceSimulation(availableDripsData.value, (d) => d.id).on('tick', ticked)
-  viz
-    .force(
-      'collide',
-      d3.forceCollide().radius(() => radius.value + radius.value / 2)
-    )
-    .force(
-      'x',
-      d3.forceX(() => window.innerWidth / 2)
-    )
-    .force(
-      'y',
-      d3.forceY(() => window.innerHeight / 2)
-    )
-}
-
-const ticked = () => {
-  const _svg = document.getElementById('svg')
-  const container = d3
-    .select(_svg)
-    .selectAll('.drip')
-    .data(availableDripsData.value, (d) => d.id)
-
-  container
-    .enter()
-    .append('circle')
-    .attr('class', 'drip')
-    .merge(container)
-    .style('cursor', 'pointer')
-    .style('stroke', 'gray')
-    .style('stroke-width', '1px')
-    .attr('r', () => radius.value)
-    .attr('cx', (drip) => drip.x)
-    .attr('cy', (drip) => drip.y)
-    .attr('fill', () => colorDefault.value)
-    .on('mouseover', (event) => {
-      d3.select(event.currentTarget)
-        .attr('r', radius.value + radius.value / 2)
-        .style('fill', colorHovered.value)
-    })
-    .on('mouseout', (event) => {
-      d3.select(event.currentTarget).attr('r', radius.value).style('fill', colorDefault.value)
-    })
-
-  container.exit().remove()
 }
 
 const provider = computed(() => {
   return store.getters['metamask/provider']
 })
 
+const startFakeEarnings = () => {
+  setInterval(() => {
+    available.value++
+    visualization.value.update(availableArray.value)
+  }, 2000)
+}
+
+const login = async () => {
+  const addresses = await provider.value.listAccounts()
+  if (addresses.length) await store.dispatch('metamask/connectWallet')
+}
+
+const availableArray = computed(() => {
+  const _array = Array.from(Array(Math.floor(available.value)).keys())
+  const _data = _array.map((_n, _i) => {
+    return { id: _i + 1 }
+  })
+  return _data
+})
+
 const resizeHandler = () => {
-  // _viz.value.force.size([window.innerWidth, window.innerHeight]).resume()
+  simulation.value.force('x', d3.forceX(window.innerWidth / 2))
+  simulation.value.force('y', d3.forceY(window.innerHeight / 2))
 }
 
 onMounted(async () => {
-  const addresses = await provider.value.listAccounts()
-  if (addresses.length) store.dispatch('metamask/connectWallet')
-  window.addEventListener('resize', resizeHandler)
-  resizeHandler()
-  createVisualization()
-})
+  await login()
+  initVisualization()
 
-onBeforeUnmount(() => {
-  window.removeEventListener('resize', resizeHandler)
+  visualization.value.update(availableArray.value)
+
+  startFakeEarnings()
+
+  window.addEventListener('resize', resizeHandler)
 })
 </script>
 <style lang="scss" scoped>
-.faucet {
-  position: absolute;
-  left: 50vw;
-  top: 0rem;
-  transform: translateX(-50%) scale(1.5);
+.PageContainer {
+  @extend .max-width-wrapper;
 }
 #svg {
   position: absolute;
@@ -105,4 +132,17 @@ onBeforeUnmount(() => {
   width: 100vw;
   height: 100vh;
 }
+.deposits {
+  // position: absolute;
+  // top: 5rem;
+  // left: 50vw;
+  // transform: translateX(-50%);
+}
+
+// container
+//   .enter()
+//   .append('circle')
+//   .merge(container)
+
+// container.transition().duration(500)
 </style>

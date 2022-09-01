@@ -8,7 +8,8 @@
 
 <style lang="scss" scoped>
 .Panel {
-  @extend .white-glass;
+  // @extend .white-glass;
+  background: white;
   color: $gray-default;
   box-shadow: $box-shadow-default;
   border-radius: 1rem;

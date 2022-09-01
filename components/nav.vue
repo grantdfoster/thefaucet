@@ -3,7 +3,7 @@
     <div class="Navigation__inner">
       <div class="Navigation__inner--cell Navigation__inner--cell-left">
         <div class="row">
-          <img class="Navigation__inner--logo" :src="logo" alt="logo" @click="$router.push('/')" />
+          <!-- <img class="Navigation__inner--logo" :src="logo" alt="logo" @click="$router.push('/')" /> -->
           <p>The Faucet</p>
         </div>
       </div>
@@ -78,7 +78,7 @@ export default Vue.extend({
     @extend .max-width-wrapper;
     width: 100%;
     height: 6.75rem;
-    padding: 3.75rem 5rem 0rem 5rem;
+    // padding: 3.75rem 5rem 0rem 5rem;
     display: flex;
     align-items: center;
     justify-content: space-between;

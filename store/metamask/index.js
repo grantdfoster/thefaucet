@@ -59,7 +59,7 @@ export const actions = {
 
     const accounts = await provider.send('eth_requestAccounts')
     commit('setAccounts', accounts)
-    dispatch('fetchBalances')
+    await dispatch('fetchBalances')
   },
   async fetchBalances({ dispatch }) {
     await dispatch('getDripBalance')
