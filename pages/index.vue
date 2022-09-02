@@ -12,55 +12,46 @@ import * as d3 from 'd3'
 
 const store = useStore()
 
-const colorDefault = ref('#cce8ff')
-const colorHovered = ref('#a8d8ff')
-const animationDuration = ref(350)
-
 const visualization = ref(null)
 const simulation = ref(null)
 
-const radius = ref(20)
-const padding = ref(0)
 const available = ref(10)
-const deposits = ref(100)
+const deposits = ref(1000)
+
+const colorDefault = ref('#cce8ff')
+const padding = ref(2)
+const radius = ref(20)
+const bigRadius = ref(80)
 
 const initVisualization = () => {
-  const svg = d3.select(document.getElementById('svg'))
+  const svg = d3.select(document.getElementById('svg')).on('pointermove', pointed)
 
   simulation.value = d3
     .forceSimulation()
-    .force('collide', d3.forceCollide(radius.value + padding.value).strength(1))
-    .force('x', d3.forceX(window.innerWidth / 2))
-    .force('y', d3.forceY(window.innerHeight / 2))
+    .force(
+      'collide',
+      d3.forceCollide((_d, i) => (i === 0 ? bigRadius.value + padding.value : radius.value + padding.value))
+    )
+    .force('x', d3.forceX((_d, i) => (i === 0 ? null : window.innerWidth / 2)).strength(0.05))
+    .force('y', d3.forceY((_d, i) => (i === 0 ? null : window.innerHeight / 2)).strength(0.05))
     .on('tick', ticked)
 
-  let node = svg.append('g').attr('stroke', '#fff').attr('stroke-width', 1.5).selectAll('circle')
+  let node = svg.append('g').selectAll('circle')
+
+  function pointed(event) {
+    const [x, y] = d3.pointer(event)
+    simulation.value.nodes()[0].x = x
+    simulation.value.nodes()[0].y = y
+  }
 
   function ticked() {
     node
-      .attr('cx', (d) => d.x)
-      .attr('cy', (d) => d.y)
-      .style('cursor', 'pointer')
-      .style('stroke', 'gray')
       .style('stroke-width', '1px')
-      .attr('r', () => radius.value)
-      .attr('cx', (d) => d.x)
-      .attr('cy', (d) => d.y)
-      .attr('fill', () => colorDefault.value)
-      .on('mouseover', (event) => {
-        d3.select(event.currentTarget)
-          .transition()
-          .duration(animationDuration.value)
-          .attr('r', radius.value + padding.value)
-          .style('fill', colorHovered.value)
-      })
-      .on('mouseout', (event) => {
-        d3.select(event.currentTarget)
-          .transition()
-          .duration(animationDuration.value)
-          .attr('r', radius.value)
-          .style('fill', colorDefault.value)
-      })
+      .style('stroke', (_d, i) => (i === 0 ? 'white' : 'gray'))
+      .attr('fill', (_d, i) => (i === 0 ? 'white' : colorDefault.value))
+      .attr('r', (_d, i) => (i === 0 ? bigRadius.value : radius.value))
+      .attr('cx', (d, i) => (i === 0 ? 0 : d.x))
+      .attr('cy', (d, i) => (i === 0 ? 0 : d.y))
   }
 
   visualization.value = Object.assign(svg.node(), {
@@ -73,9 +64,7 @@ const initVisualization = () => {
       simulation.value.nodes(nodes)
       simulation.value.alpha(1).restart()
 
-      node = node
-        .data(nodes, (d) => d.id)
-        .join((enter) => enter.append('circle').attr('r', radius.value).attr('fill', colorDefault.value))
+      node = node.data(nodes, (d) => d.id).join((enter) => enter.append('circle'))
     },
   })
 }
