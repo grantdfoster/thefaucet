@@ -2,7 +2,7 @@
   <div>
     <Nav />
     <Nuxt />
-    <Dashboard />
+    <!-- <Dashboard /> -->
   </div>
 </template>
 
