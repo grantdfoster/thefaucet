@@ -13,50 +13,37 @@ import * as d3 from 'd3'
 const store = useStore()
 
 const colorDefault = ref('#cce8ff')
-const colorHovered = ref('#a8d8ff')
-const animationDuration = ref(350)
 
 const visualization = ref(null)
 const simulation = ref(null)
 
-const radius = ref(20)
-const padding = ref(0)
+const radius = ref(30)
+const bigRadius = ref(75)
 const available = ref(10)
 const deposits = ref(100)
 
 const initVisualization = () => {
   const svg = d3.select(document.getElementById('svg'))
+  svg.on('touchmove', (e) => e.preventDefault()).on('pointermove', pointed)
 
   simulation.value = d3
     .forceSimulation()
-    .force('x', d3.forceX(window.innerWidth / 2).strength(0.05))
-    .force('y', d3.forceY(window.innerHeight).strength(0.05))
-    .force('collide', d3.forceCollide(radius.value).strength(1))
+    .alphaTarget(0.3)
+    .velocityDecay(0.4)
+    .force('x', d3.forceX(window.innerWidth / 2).strength(0.02))
+    .force('y', d3.forceY(window.innerHeight).strength(0.1))
+    .force('collide', d3.forceCollide((d, i) => (i === 0 ? bigRadius.value : radius.value)).strength(1))
+    .force(
+      'charge',
+      d3.forceManyBody().strength((d, i) => (i ? 0 : -100))
+    )
     .on('tick', ticked)
 
-  let node = svg
-    .append('g')
-    .selectAll('circle')
-    .call(d3.drag().on('start', dragStart).on('drag', drag).on('end', dragEnd))
+  let node = svg.append('g').selectAll('circle')
 
-  function dragStart(d) {
-    // console.log('drag start');
-    simulation.value.alphaTarget(0.5).restart()
-    d.fx = d.x
-    d.fy = d.y
-  }
-
-  function drag(d) {
-    const [x, y] = d3.pointer(this)
-    d.fx = x
-    d.fy = y
-  }
-
-  function dragEnd(d) {
-    // console.log('drag end');
-    simulation.value.alphaTarget(0)
-    d.fx = null
-    d.fy = null
+  function pointed(event) {
+    simulation.value.nodes()[0].x = event.clientX - radius.value
+    simulation.value.nodes()[0].y = event.clientY - radius.value
   }
 
   function ticked() {
@@ -64,24 +51,10 @@ const initVisualization = () => {
       .style('cursor', 'pointer')
       .style('stroke', 'gray')
       .style('stroke-width', '1px')
-      .attr('r', () => radius.value)
-      .attr('cx', (d) => (d.x = Math.max(radius.value, Math.min(window.innerWidth - radius.value, d.x))))
-      .attr('cy', (d) => (d.y = Math.max(radius.value, Math.min(window.innerHeight - radius.value, d.y))))
-      .attr('fill', () => colorDefault.value)
-      .on('mouseover', (event) => {
-        d3.select(event.currentTarget)
-          .transition()
-          .duration(animationDuration.value)
-          .attr('r', radius.value + padding.value)
-          .style('fill', colorHovered.value)
-      })
-      .on('mouseout', (event) => {
-        d3.select(event.currentTarget)
-          .transition()
-          .duration(animationDuration.value)
-          .attr('r', radius.value)
-          .style('fill', colorDefault.value)
-      })
+      .attr('r', (d, i) => (i === 0 ? bigRadius.value : radius.value))
+      .attr('cx', (d, i) => (d.x = Math.max(radius.value, Math.min(window.innerWidth - radius.value, d.x))))
+      .attr('cy', (d, i) => (d.y = Math.max(radius.value, Math.min(window.innerHeight - radius.value, d.y))))
+      .attr('fill', (d, i) => colorDefault.value)
   }
 
   visualization.value = Object.assign(svg.node(), {
@@ -107,7 +80,7 @@ const startFakeEarnings = () => {
   setInterval(() => {
     available.value++
     visualization.value.update(availableArray.value)
-  }, 2000)
+  }, 5000)
 }
 
 const login = async () => {
@@ -124,8 +97,8 @@ const availableArray = computed(() => {
 })
 
 const resizeHandler = () => {
-  simulation.value.force('x', d3.forceX(window.innerWidth / 2))
-  simulation.value.force('y', d3.forceY(window.innerHeight / 2))
+  simulation.value.force('x', d3.forceX(window.innerWidth / 2).strength(0.02))
+  simulation.value.force('y', d3.forceY(window.innerHeight).strength(0.1))
 }
 
 onMounted(async () => {
