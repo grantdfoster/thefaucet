@@ -57,16 +57,12 @@ const initVisualization = () => {
       .style('stroke', getStroke)
       .attr('fill', getFill)
       .attr('r', getRadius)
-      .attr('cx', getPositionX)
-      .attr('cy', getPositionY)
-  }
-
-  function getPositionX(dot) {
-    return dot.root ? dot.x : Math.max(getRadius(dot), Math.min(window.innerWidth - getRadius(dot), dot.x))
-  }
-
-  function getPositionY(dot) {
-    return dot.root ? dot.y : Math.max(getRadius(dot), Math.min(window.innerHeight - getRadius(dot), dot.y))
+      // position to fit inside of the screen!
+      .attr('cx', (d) => (d.x = d.root ? d.x : Math.max(getRadius(d), Math.min(window.innerWidth - getRadius(d), d.x))))
+      .attr(
+        'cy',
+        (d) => (d.y = d.root ? d.y : Math.max(getRadius(d), Math.min(window.innerHeight - getRadius(d), d.y)))
+      )
   }
 
   function getRadius(dot) {
