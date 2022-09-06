@@ -74,6 +74,7 @@ export default Vue.extend({
   width: 100%;
   user-select: none;
   color: black;
+  background: none;
   &__inner {
     @extend .max-width-wrapper;
     width: 100%;

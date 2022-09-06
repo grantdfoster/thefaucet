@@ -12,49 +12,73 @@ import * as d3 from 'd3'
 
 const store = useStore()
 
-const colorDefault = ref('#cce8ff')
+const blue = ref('#cce8ff')
 
 const visualization = ref(null)
 const simulation = ref(null)
 
-const radius = ref(30)
+const radius = ref(15)
 const bigRadius = ref(75)
-const available = ref(10)
+
+const available = ref(100)
 const deposits = ref(100)
 
 const initVisualization = () => {
   const svg = d3.select(document.getElementById('svg'))
-  svg.on('touchmove', (e) => e.preventDefault()).on('pointermove', pointed)
+  svg.on('touchmove', touchmove).on('mousemove', mousemove)
 
   simulation.value = d3
     .forceSimulation()
     .alphaTarget(0.3)
-    .velocityDecay(0.4)
+    .velocityDecay(0.45)
     .force('x', d3.forceX(window.innerWidth / 2).strength(0.02))
-    .force('y', d3.forceY(window.innerHeight).strength(0.1))
-    .force('collide', d3.forceCollide((d, i) => (i === 0 ? bigRadius.value : radius.value)).strength(1))
-    .force(
-      'charge',
-      d3.forceManyBody().strength((d, i) => (i ? 0 : -100))
-    )
+    .force('y', d3.forceY(window.innerHeight).strength(0.02))
+    .force('collide', d3.forceCollide(getRadius).iterations(3))
     .on('tick', ticked)
 
   let node = svg.append('g').selectAll('circle')
 
-  function pointed(event) {
-    simulation.value.nodes()[0].x = event.clientX - radius.value
-    simulation.value.nodes()[0].y = event.clientY - radius.value
+  function mousemove(event) {
+    const _node = simulation.value.nodes()[0]
+    _node.fx = event.clientX
+    _node.fy = event.clientY
+  }
+
+  function touchmove(event) {
+    const touch = event.touches[0]
+    const _node = simulation.value.nodes()[0]
+    _node.fx = touch.clientX
+    _node.fy = touch.clientY
   }
 
   function ticked() {
     node
-      .style('cursor', 'pointer')
-      .style('stroke', 'gray')
       .style('stroke-width', '1px')
-      .attr('r', (d, i) => (i === 0 ? bigRadius.value : radius.value))
-      .attr('cx', (d, i) => (d.x = Math.max(radius.value, Math.min(window.innerWidth - radius.value, d.x))))
-      .attr('cy', (d, i) => (d.y = Math.max(radius.value, Math.min(window.innerHeight - radius.value, d.y))))
-      .attr('fill', (d, i) => colorDefault.value)
+      .style('stroke', getStroke)
+      .attr('fill', getFill)
+      .attr('r', getRadius)
+      .attr('cx', getPositionX)
+      .attr('cy', getPositionY)
+  }
+
+  function getPositionX(dot) {
+    return dot.root ? dot.x : Math.max(getRadius(dot), Math.min(window.innerWidth - getRadius(dot), dot.x))
+  }
+
+  function getPositionY(dot) {
+    return dot.root ? dot.y : Math.max(getRadius(dot), Math.min(window.innerHeight - getRadius(dot), dot.y))
+  }
+
+  function getRadius(dot) {
+    return dot.root ? bigRadius.value : radius.value
+  }
+
+  function getFill(dot) {
+    return dot.root ? 'transparent' : blue.value
+  }
+
+  function getStroke(dot) {
+    return dot.root ? 'none' : 'gray'
   }
 
   visualization.value = Object.assign(svg.node(), {
@@ -63,6 +87,8 @@ const initVisualization = () => {
       // recycling old nodes to preserve position and velocity.
       const old = new Map(node.data().map((d) => [d.id, d]))
       nodes = nodes.map((d) => Object.assign(old.get(d.id) || {}, d))
+
+      nodes[0].root = true
 
       simulation.value.nodes(nodes)
       simulation.value.alpha(1).restart()
@@ -115,12 +141,12 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .PageContainer {
   @extend .max-width-wrapper;
+  background: none;
 }
 #svg {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: -1;
   width: 100vw;
   height: 100vh;
 }
