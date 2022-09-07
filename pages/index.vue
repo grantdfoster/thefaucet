@@ -17,10 +17,10 @@ const blue = ref('#cce8ff')
 const visualization = ref(null)
 const simulation = ref(null)
 
-const radius = ref(15)
-const bigRadius = ref(75)
+const radius = ref(20)
+const bigRadius = ref(100)
 
-const available = ref(100)
+const available = ref(25)
 const deposits = ref(100)
 
 const initVisualization = () => {
@@ -30,9 +30,9 @@ const initVisualization = () => {
   simulation.value = d3
     .forceSimulation()
     .alphaTarget(0.3)
-    .velocityDecay(0.45)
-    .force('x', d3.forceX(window.innerWidth / 2).strength(0.02))
-    .force('y', d3.forceY(window.innerHeight).strength(0.02))
+    .velocityDecay(0.4)
+    .force('x', d3.forceX((d) => (d.root ? null : window.innerWidth / 2)).strength(0.01))
+    .force('y', d3.forceY((d) => (d.root ? null : window.innerHeight)).strength(0.02))
     .force('collide', d3.forceCollide(getRadius).iterations(3))
     .on('tick', ticked)
 
@@ -87,7 +87,6 @@ const initVisualization = () => {
       nodes[0].root = true
 
       simulation.value.nodes(nodes)
-      simulation.value.alpha(1).restart()
 
       node = node.data(nodes, (d) => d.id).join((enter) => enter.append('circle'))
     },
