@@ -17,22 +17,22 @@ const blue = ref('#cce8ff')
 const visualization = ref(null)
 const simulation = ref(null)
 
-const radius = ref(20)
-const bigRadius = ref(100)
+const dotRadius = ref(20)
+const pointerRadius = ref(100)
 
 const available = ref(25)
 const deposits = ref(100)
 
 const initVisualization = () => {
   const svg = d3.select(document.getElementById('svg'))
-  svg.on('touchmove', touchmove).on('mousemove', mousemove)
+  svg.on('mousemove', mousemove).on('touchmove', touchmove)
 
   simulation.value = d3
     .forceSimulation()
     .alphaTarget(0.3)
     .velocityDecay(0.4)
-    .force('x', d3.forceX((d) => (d.root ? null : window.innerWidth / 2)).strength(0.01))
-    .force('y', d3.forceY((d) => (d.root ? null : window.innerHeight)).strength(0.02))
+    .force('x', d3.forceX((d) => (d.pointer ? null : window.innerWidth / 2)).strength(0.01))
+    .force('y', d3.forceY((d) => (d.pointer ? null : window.innerHeight)).strength(0.04))
     .force('collide', d3.forceCollide(getRadius).iterations(3))
     .on('tick', ticked)
 
@@ -57,24 +57,28 @@ const initVisualization = () => {
       .style('stroke', getStroke)
       .attr('fill', getFill)
       .attr('r', getRadius)
-      // position to fit inside of the screen!
-      .attr('cx', (d) => (d.x = d.root ? d.x : Math.max(getRadius(d), Math.min(window.innerWidth - getRadius(d), d.x))))
-      .attr(
-        'cy',
-        (d) => (d.y = d.root ? d.y : Math.max(getRadius(d), Math.min(window.innerHeight - getRadius(d), d.y)))
-      )
+      .attr('cx', (d) => (d.x = d.pointer ? d.x : getPositionX(d)))
+      .attr('cy', (d) => (d.y = d.pointer ? d.y : getPositionY(d)))
+  }
+
+  function getPositionX(dot) {
+    return Math.max(dotRadius.value, Math.min(window.innerWidth - dotRadius.value, dot.x))
+  }
+
+  function getPositionY(dot) {
+    return Math.max(dotRadius.value, Math.min(window.innerHeight - dotRadius.value, dot.y))
   }
 
   function getRadius(dot) {
-    return dot.root ? bigRadius.value : radius.value
+    return dot.pointer ? pointerRadius.value : dotRadius.value
   }
 
   function getFill(dot) {
-    return dot.root ? 'transparent' : blue.value
+    return dot.pointer ? 'transparent' : blue.value
   }
 
   function getStroke(dot) {
-    return dot.root ? 'none' : 'gray'
+    return dot.pointer ? 'none' : 'gray'
   }
 
   visualization.value = Object.assign(svg.node(), {
@@ -84,11 +88,18 @@ const initVisualization = () => {
       const old = new Map(node.data().map((d) => [d.id, d]))
       nodes = nodes.map((d) => Object.assign(old.get(d.id) || {}, d))
 
-      nodes[0].root = true
+      nodes[0].pointer = true
 
       simulation.value.nodes(nodes)
 
-      node = node.data(nodes, (d) => d.id).join((enter) => enter.append('circle'))
+      node = node
+        .data(nodes, (d) => d.id)
+        .join((enter) =>
+          enter
+            .append('circle')
+            .attr('cx', (d) => (d.x = d.pointer ? d.x : window.innerWidth / 2))
+            .attr('cy', (d) => (d.y = d.pointer ? d.y : window.innerHeight / 2))
+        )
     },
   })
 }
@@ -101,7 +112,7 @@ const startFakeEarnings = () => {
   setInterval(() => {
     available.value++
     visualization.value.update(availableArray.value)
-  }, 5000)
+  }, 1000)
 }
 
 const login = async () => {
