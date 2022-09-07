@@ -29,7 +29,6 @@ const props = defineProps({
   color: #000;
   overflow: hidden;
   color: white;
-  font-family: $secondary-font;
   &__title {
     font-weight: 400;
     font-size: 1rem;

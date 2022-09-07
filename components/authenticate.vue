@@ -86,7 +86,6 @@ const connect = async () => {
 }
 .titletext {
   font-weight: 500;
-  font-family: $secondary-font;
   line-height: 2.0625rem;
   font-size: 1.6rem;
 }
