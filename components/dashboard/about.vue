@@ -72,7 +72,6 @@ const props = defineProps({
   padding: 2rem 2rem 4rem;
 }
 .title {
-  font-family: $primary-font;
   font-size: 1.75rem;
   font-weight: 500;
   position: relative;

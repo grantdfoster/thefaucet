@@ -22,6 +22,14 @@ export default {
         href: 'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Two+Tone|Material+Icons+Round|Material+Icons+Sharp',
         rel: 'stylesheet',
       },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Pacifico:wght@300;400;500;700&display=swap&display=swap',
+      },
+      {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;700&display=swap&display=swap',
+      },
     ],
     script: [],
   },

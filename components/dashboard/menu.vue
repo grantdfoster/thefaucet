@@ -67,14 +67,12 @@ const props = defineProps({
   gap: 4rem;
 }
 .title {
-  font-family: $primary-font;
   font-size: 1.75rem;
   font-weight: 500;
   position: relative;
   z-index: 2;
 }
 .description {
-  font-family: $secondary-font;
   font-size: 1rem;
   font-weight: 400;
   line-height: 1.5rem;

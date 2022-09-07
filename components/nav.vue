@@ -4,7 +4,7 @@
       <div class="Navigation__inner--cell Navigation__inner--cell-left">
         <div class="row">
           <!-- <img class="Navigation__inner--logo" :src="logo" alt="logo" @click="$router.push('/')" /> -->
-          <p>The Faucet</p>
+          <p class="title">The Faucet</p>
         </div>
       </div>
       <transition name="fade">
@@ -124,5 +124,8 @@ export default Vue.extend({
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+.title {
+  font-family: $titleFont;
 }
 </style>

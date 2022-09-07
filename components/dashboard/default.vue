@@ -19,7 +19,6 @@ input,
 textarea,
 button {
   font-weight: 400;
-  font-family: $default-font;
   font-size: 1rem;
   word-spacing: 0.0625rem;
   -ms-text-size-adjust: 100%;

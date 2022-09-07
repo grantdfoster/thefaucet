@@ -74,7 +74,6 @@ const props = defineProps({
   gap: 4rem;
 }
 .title {
-  font-family: $primary-font;
   font-size: 1.75rem;
   font-weight: 500;
   position: relative;

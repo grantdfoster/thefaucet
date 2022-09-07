@@ -1,14 +1,17 @@
 <template>
   <div class="PageContainer">
-    <p class="deposits">Deposits: {{ deposits }}</p>
-    <p class="available">Availabe: {{ available }}</p>
+    <!-- <p class="deposits">Deposits: {{ deposits }}</p> -->
+    <!-- <p class="available">Availabe: {{ available }}</p> -->
     <svg id="svg"></svg>
+    <img class="spout" :src="faucetSpout" alt="" />
   </div>
 </template>
 
 <script setup>
 import { onMounted, computed, useStore, ref } from '@nuxtjs/composition-api'
 import * as d3 from 'd3'
+
+import faucetSpout from '@/assets/faucet-spout.png'
 
 const store = useStore()
 
@@ -129,8 +132,8 @@ const availableArray = computed(() => {
 })
 
 const resizeHandler = () => {
-  simulation.value.force('x', d3.forceX(window.innerWidth / 2).strength(0.02))
-  simulation.value.force('y', d3.forceY(window.innerHeight).strength(0.1))
+  simulation.value.force('x', d3.forceX((d) => (d.pointer ? null : window.innerWidth / 2)).strength(0.01))
+  simulation.value.force('y', d3.forceY((d) => (d.pointer ? null : window.innerHeight)).strength(0.04))
 }
 
 onMounted(async () => {
@@ -153,8 +156,15 @@ onMounted(async () => {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
+}
+.spout {
+  width: 7rem;
+  position: absolute;
+  left: 50vw;
+  top: 50vh;
+  transform: translate(-50%, -50%);
 }
 .deposits {
   // position: absolute;
