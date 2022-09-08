@@ -2,6 +2,7 @@
   <div class="PageContainer">
     <!-- <p class="deposits">Deposits: {{ deposits }}</p> -->
     <!-- <p class="available">Availabe: {{ available }}</p> -->
+    <div class="background" :style="backgroundStyle"></div>
     <svg id="svg"></svg>
     <img class="spout" :src="faucetSpout" alt="" />
   </div>
@@ -11,6 +12,7 @@
 import { onMounted, computed, useStore, ref } from '@nuxtjs/composition-api'
 import * as d3 from 'd3'
 
+import background from '@/assets/background.png'
 import faucetSpout from '@/assets/faucet-spout.png'
 
 const store = useStore()
@@ -20,11 +22,24 @@ const blue = ref('#cce8ff')
 const visualization = ref(null)
 const simulation = ref(null)
 
-const dotRadius = ref(20)
-const pointerRadius = ref(100)
+const dotRadius = computed(() => {
+  return store.getters['window/isMobile'] ? 25 : 35
+})
+const pointerRadius = computed(() => {
+  return store.getters['window/isMobile'] ? 100 : 160
+})
 
 const available = ref(25)
 const deposits = ref(100)
+
+const backgroundStyle = computed(() => {
+  return {
+    'background-size': 'cover',
+    'background-image': `url("${background}")`,
+    'background-position': '50% 50%',
+    'background-repeat': 'no-repeat',
+  }
+})
 
 const initVisualization = () => {
   const svg = d3.select(document.getElementById('svg'))
@@ -115,12 +130,14 @@ const startFakeEarnings = () => {
   setInterval(() => {
     available.value++
     visualization.value.update(availableArray.value)
-  }, 1000)
+  }, 10000)
 }
 
 const login = async () => {
-  const addresses = await provider.value.listAccounts()
-  if (addresses.length) await store.dispatch('metamask/connectWallet')
+  if (provider.value) {
+    const addresses = await provider.value.listAccounts()
+    if (addresses.length) await store.dispatch('metamask/connectWallet')
+  }
 }
 
 const availableArray = computed(() => {
@@ -150,7 +167,6 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .PageContainer {
   @extend .max-width-wrapper;
-  background: none;
 }
 #svg {
   position: absolute;
@@ -164,19 +180,14 @@ onMounted(async () => {
   position: absolute;
   left: 50vw;
   top: 50vh;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -100%);
+  filter: drop-shadow(12px 22px 16px rgb(93, 93, 93));
 }
-.deposits {
-  // position: absolute;
-  // top: 5rem;
-  // left: 50vw;
-  // transform: translateX(-50%);
+.background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
-
-// container
-//   .enter()
-//   .append('circle')
-//   .merge(container)
-
-// container.transition().duration(500)
 </style>

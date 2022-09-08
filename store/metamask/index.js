@@ -29,6 +29,7 @@ export const mutations = {
 
 export const actions = {
   async initProvider({ commit, getters }) {
+    if (!getters.provider) return
     // get and store the current network
     // must freeze to place into store state
     const network = await getters.provider.getNetwork()
@@ -39,7 +40,7 @@ export const actions = {
 
     providerListener.on('network', (_newNetwork, _oldNetwork) => {
       if (_oldNetwork) {
-        const delayTime = 1500
+        const delayTime = 500
         this.app.$toast.info('Switching Networks...').goAway(delayTime)
         setTimeout(() => {
           window.location.reload()
@@ -104,6 +105,7 @@ export const getters = {
     return networkConnected?.chainId === parseInt(binanceSmartChain?.chainId)
   },
   provider: () => {
+    if (!window.ethereum) return null
     return new ethers.providers.Web3Provider(window.ethereum)
   },
   network: (state) => {

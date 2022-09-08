@@ -3,13 +3,12 @@
     <div class="Navigation__inner">
       <div class="Navigation__inner--cell Navigation__inner--cell-left">
         <div class="row">
-          <!-- <img class="Navigation__inner--logo" :src="logo" alt="logo" @click="$router.push('/')" /> -->
           <p class="title">The Faucet</p>
         </div>
       </div>
       <transition name="fade">
         <div class="Navigation__inner--cell Navigation__inner--cell-right">
-          <ButtonPrimary v-if="!correctNetwork" text="Change Network" @click.native="changeNetwork">
+          <ButtonPrimary v-if="!correctNetwork" text="Network" @click.native="changeNetwork">
             <span class="material-icons-outlined"> error_outline </span>
           </ButtonPrimary>
           <ButtonPrimary
@@ -75,11 +74,12 @@ export default Vue.extend({
   user-select: none;
   color: black;
   background: none;
+  position: relative;
+  z-index: 1;
   &__inner {
     @extend .max-width-wrapper;
     width: 100%;
-    height: 6.75rem;
-    // padding: 3.75rem 5rem 0rem 5rem;
+    height: 6rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -126,6 +126,7 @@ export default Vue.extend({
   gap: 0.5rem;
 }
 .title {
-  font-family: $titleFont;
+  font-family: $title-font;
+  font-size: 2rem;
 }
 </style>
