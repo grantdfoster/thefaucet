@@ -1,12 +1,13 @@
-import { ethers } from 'ethers'
+import { ethers, providers, utils } from 'ethers'
 
 export const state = () => ({
-  accounts: null,
-  networkConnected: null,
+  network: null,
+  walletAddress: null,
   faucetAddress: '0xFFE811714ab35360b67eE195acE7C10D93f89D8C',
   dripAddress: '0x20f663CEa80FaCE82ACDFA3aAE6862d246cE0333',
-  myAddress: '0x434f439FF77Ef17Daf247f1F089C44B0318f26bA',
-  dripBalance: null,
+  dripBalance: 0,
+  dripDeposited: 0,
+  dripAvailable: 0,
   binanceSmartChain: {
     chainName: 'Binance Smart Chain',
     chainId: ethers.utils.hexlify(56),
@@ -17,38 +18,24 @@ export const state = () => ({
 })
 
 export const mutations = {
-  setAccounts: (state, _accounts) => {
-    state.accounts = _accounts
+  setNetwork: (state, _payload) => {
+    state.network = _payload
   },
-  setNetworkConnected: (state, _network) => {
-    state.networkConnected = _network
+  setWalletAddress: (state, _payload) => {
+    state.walletAddress = _payload
   },
   setDripBalance: (state, _balance) => {
     state.dripBalance = _balance
   },
+  setDripDeposited: (state, _balance) => {
+    state.dripDeposited = _balance
+  },
+  setDripAvailable: (state, _balance) => {
+    state.dripAvailable = _balance
+  },
 }
 
 export const actions = {
-  async initProvider({ commit, getters }) {
-    if (!getters.provider) return
-    // get and store the current network
-    // must freeze to place into store state
-    const network = await getters.provider.getNetwork()
-    commit('setNetworkConnected', Object.freeze(network))
-
-    // catch a network change and reload the application if detected
-    const providerListener = new ethers.providers.Web3Provider(window.ethereum, 'any')
-
-    providerListener.on('network', (_newNetwork, _oldNetwork) => {
-      if (_oldNetwork) {
-        const delayTime = 500
-        this.app.$toast.info('Switching Networks...').goAway(delayTime)
-        setTimeout(() => {
-          window.location.reload()
-        }, delayTime)
-      }
-    })
-  },
   async changeNetwork({ state }) {
     if (!window.ethereum) throw new Error('Please Use a Web3 Enabled Browser!')
     await window.ethereum.request({
@@ -56,41 +43,89 @@ export const actions = {
       params: [state.binanceSmartChain],
     })
   },
-  async connectWallet({ commit, getters, dispatch }) {
-    const { provider } = getters
+  async connectMetamask({ commit, dispatch }) {
+    if (window.ethereum) {
+      const ethereum = window.ethereum
+      const provider = new providers.Web3Provider(ethereum, 'any')
 
-    const accounts = await provider.send('eth_requestAccounts')
-    commit('setAccounts', accounts)
-    await dispatch('fetchBalances')
+      try {
+        await provider.send('eth_requestAccounts', [])
+        const signer = provider.getSigner()
+        const address = await signer.getAddress()
+        const network = await provider.getNetwork()
+
+        commit('setNetwork', Object.freeze(network))
+        commit('setWalletAddress', address)
+
+        await dispatch('fetchBalances')
+
+        // set watcher on accounts changed
+        ethereum.on('accountsChanged', async () => {
+          console.log('accounts changed...')
+          const signer = provider.getSigner()
+          const address = await signer.getAddress()
+          commit('setWalletAddress', address)
+        })
+
+        // set watcher on provider changed
+        provider.on('network', (_newNetwork, _oldNetwork) => {
+          if (_oldNetwork) {
+            console.log('network changed...')
+            const delayTime = 500
+            this.app.$toast.info('Switching Networks...').goAway(delayTime)
+            setTimeout(() => {
+              window.location.reload()
+            }, delayTime)
+          }
+        })
+      } catch (error) {
+        console.error(error)
+        throw new Error('Error requesting account access or signer')
+      }
+    } else {
+      throw new Error('Injected metamask provider not found')
+    }
   },
   async fetchBalances({ dispatch }) {
     await dispatch('getDripBalance')
+    await dispatch('getDripDeposited')
+    await dispatch('getDripAvailable')
   },
-
   async getDripBalance({ commit, state, getters }) {
-    const { accounts, dripAddress } = state
+    const { walletAddress, dripAddress } = state
     const { provider } = getters
 
     const abi = require(`@/abi/drip.json`)
     const contract = new ethers.Contract(dripAddress, abi, provider)
     const decimals = await contract.decimals()
-    const balance = await contract.balanceOf(accounts[0])
-    const formattedBalance = ethers.utils.formatUnits(balance, decimals)
+    const balance = await contract.balanceOf(walletAddress)
+    const formattedBalance = utils.formatUnits(balance, decimals)
     const dripBalance = parseFloat(formattedBalance)
     commit('setDripBalance', dripBalance)
   },
   async getDripAvailable({ commit, state, getters }) {
-    const { accounts, faucetAddress, myAddress } = state
+    const { walletAddress, faucetAddress } = state
     const { provider } = getters
 
     const abi = require(`@/abi/faucet.json`)
     const contract = new ethers.Contract(faucetAddress, abi, provider)
-    // const decimals = await contract.decimals()
-    const balance = await contract.claimsAvailable(myAddress)
-    console.log(balance)
-    // const formattedBalance = ethers.utils.formatUnits(balance, decimals)
-    // const dripBalance = parseFloat(formattedBalance)
-    // commit('setDripBalance', dripBalance)
+    const decimals = 18 // drip token is 18 decimals
+    const balance = await contract.claimsAvailable(walletAddress)
+    const formattedBalance = utils.formatUnits(balance.toString(), decimals)
+    const floatBalance = parseFloat(formattedBalance)
+    commit('setDripAvailable', floatBalance)
+  },
+  async getDripDeposited({ commit, state, getters }) {
+    const { walletAddress, faucetAddress } = state
+    const { provider } = getters
+
+    const abi = require(`@/abi/faucet.json`)
+    const contract = new ethers.Contract(faucetAddress, abi, provider)
+    const decimals = 18 // drip token is 18 decimals
+    const info = await contract.userInfo(walletAddress)
+    const formattedBalance = utils.formatUnits(info.deposits.toString(), decimals)
+    const floatBalance = parseFloat(formattedBalance)
+    commit('setDripDeposited', floatBalance)
   },
   // async approveUsdc({ state, getters }, amount) {
   //   const { tokenPrice } = state
@@ -108,27 +143,35 @@ export const actions = {
   // },
   disconnect({ commit }) {
     if (window?.ethereum?.disconnect) window.ethereum.disconnect()
-    commit('setAccounts', null)
-    commit('setDripBalance', null)
+    commit('setWalletAddress', null)
+    commit('setDripBalance', 0)
+    commit('setDripDeposited', 0)
+    commit('setDripAvailable', 0)
   },
 }
 
 export const getters = {
   correctNetwork: (state) => {
-    const { networkConnected, binanceSmartChain } = state
-    return networkConnected?.chainId === parseInt(binanceSmartChain?.chainId)
+    const { network, binanceSmartChain } = state
+    return network?.chainId === parseInt(binanceSmartChain?.chainId)
   },
   provider: () => {
     if (!window.ethereum) return null
-    return new ethers.providers.Web3Provider(window.ethereum)
+    return new providers.Web3Provider(window.ethereum, 'any')
   },
   network: (state) => {
     return state.network
   },
-  accounts: (state) => {
-    return state.accounts
+  walletAddress: (state) => {
+    return state.walletAddress
   },
   dripBalance: (state) => {
     return state.dripBalance
+  },
+  dripDeposited: (state) => {
+    return state.dripDeposited
+  },
+  dripAvailable: (state) => {
+    return state.dripAvailable
   },
 }

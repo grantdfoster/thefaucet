@@ -1,7 +1,7 @@
 <template>
   <div class="PageContainer">
-    <!-- <p class="deposits">Deposits: {{ deposits }}</p> -->
-    <p class="available">Availabe: {{ available.toFixed(3) }}</p>
+    <p class="deposits">Deposits: {{ deposits.toLocaleString('en-US') }}</p>
+    <p class="available">Availabe: {{ available.toLocaleString('en-US') }}</p>
     <div class="background" :style="backgroundStyle"></div>
     <svg id="svg"></svg>
     <img class="spout" :src="faucetSpout" alt="" />
@@ -29,8 +29,13 @@ const pointerRadius = computed(() => {
   return store.getters['window/isMobile'] ? 100 : 160
 })
 
-const available = ref(3)
-const deposits = ref(100)
+const available = computed(() => {
+  return store.getters['metamask/dripAvailable']
+})
+
+const deposits = computed(() => {
+  return store.getters['metamask/dripDeposited']
+})
 
 const backgroundStyle = computed(() => {
   return {
@@ -149,20 +154,21 @@ const provider = computed(() => {
 const startAvailableListener = () => {
   setInterval(() => {
     store.dispatch('metamask/getDripAvailable')
-  }, 5000)
+    visualization.value.update(availableArray.value)
+  }, 3000)
 }
 
-const startFakeEarnings = () => {
-  setInterval(() => {
-    available.value += 0.1
-    visualization.value.update(availableArray.value)
-  }, 100)
-}
+// const startFakeEarnings = () => {
+//   setInterval(() => {
+//     available.value += 0.1
+//     visualization.value.update(availableArray.value)
+//   }, 100)
+// }
 
 const login = async () => {
   if (provider.value) {
     const addresses = await provider.value.listAccounts()
-    if (addresses.length) await store.dispatch('metamask/connectWallet')
+    if (addresses.length) await store.dispatch('metamask/connectMetamask')
   }
 }
 
@@ -189,9 +195,9 @@ const resizeHandler = () => {
 onMounted(async () => {
   await login()
   initVisualization()
+  startAvailableListener()
   visualization.value.update(availableArray.value)
-  startFakeEarnings()
-  // startAvailableListener()
+  // startFakeEarnings()
   window.addEventListener('resize', resizeHandler)
 })
 </script>
@@ -225,6 +231,13 @@ onMounted(async () => {
   position: absolute;
   left: 1.5rem;
   top: 5.5rem;
+  color: black;
+  z-index: 1;
+}
+.deposits {
+  position: absolute;
+  left: 1.5rem;
+  top: 7.5rem;
   color: black;
   z-index: 1;
 }

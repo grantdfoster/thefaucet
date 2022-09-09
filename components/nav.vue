@@ -12,13 +12,13 @@
             <span class="material-icons-outlined"> error_outline </span>
           </ButtonPrimary>
           <ButtonPrimary
-            v-if="correctNetwork && !accounts"
+            v-if="correctNetwork && !walletAddress"
             text="Connect"
             @click.native="() => (showAuthenticator = true)"
           />
           <ButtonPrimary
-            v-if="correctNetwork && accounts"
-            :text="`${accounts[0].substring(0, 12)}...`"
+            v-if="correctNetwork && walletAddress"
+            :text="`${walletAddress.substring(0, 12)}...`"
             :class="`${routeName !== 'world' && routeName !== 'index' ? 'greyed' : ''}`"
             @click.native="disconnect"
           >
@@ -47,8 +47,8 @@ export default Vue.extend({
   },
 
   computed: {
-    accounts() {
-      return this.$store.getters['metamask/accounts']
+    walletAddress() {
+      return this.$store.getters['metamask/walletAddress']
     },
     correctNetwork() {
       return this.$store.getters['metamask/correctNetwork']

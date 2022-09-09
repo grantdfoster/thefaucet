@@ -34,7 +34,7 @@ const stub = () => {
 // connect with web3!
 const connect = async () => {
   try {
-    await store.dispatch('metamask/connectWallet')
+    await store.dispatch('metamask/connectMetamask')
     emit('close')
   } catch (e) {
     console.error(e)
