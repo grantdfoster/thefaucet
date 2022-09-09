@@ -5,6 +5,7 @@ export const state = () => ({
   networkConnected: null,
   faucetAddress: '0xFFE811714ab35360b67eE195acE7C10D93f89D8C',
   dripAddress: '0x20f663CEa80FaCE82ACDFA3aAE6862d246cE0333',
+  myAddress: '0x434f439FF77Ef17Daf247f1F089C44B0318f26bA',
   dripBalance: null,
   binanceSmartChain: {
     chainName: 'Binance Smart Chain',
@@ -77,6 +78,19 @@ export const actions = {
     const formattedBalance = ethers.utils.formatUnits(balance, decimals)
     const dripBalance = parseFloat(formattedBalance)
     commit('setDripBalance', dripBalance)
+  },
+  async getDripAvailable({ commit, state, getters }) {
+    const { accounts, faucetAddress, myAddress } = state
+    const { provider } = getters
+
+    const abi = require(`@/abi/faucet.json`)
+    const contract = new ethers.Contract(faucetAddress, abi, provider)
+    // const decimals = await contract.decimals()
+    const balance = await contract.claimsAvailable(myAddress)
+    console.log(balance)
+    // const formattedBalance = ethers.utils.formatUnits(balance, decimals)
+    // const dripBalance = parseFloat(formattedBalance)
+    // commit('setDripBalance', dripBalance)
   },
   // async approveUsdc({ state, getters }, amount) {
   //   const { tokenPrice } = state

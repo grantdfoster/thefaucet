@@ -1,7 +1,7 @@
 <template>
   <div class="PageContainer">
     <!-- <p class="deposits">Deposits: {{ deposits }}</p> -->
-    <!-- <p class="available">Availabe: {{ available }}</p> -->
+    <p class="available">Availabe: {{ available }}</p>
     <div class="background" :style="backgroundStyle"></div>
     <svg id="svg"></svg>
     <img class="spout" :src="faucetSpout" alt="" />
@@ -30,6 +30,7 @@ const pointerRadius = computed(() => {
 })
 
 const available = ref(25)
+
 const deposits = ref(100)
 
 const backgroundStyle = computed(() => {
@@ -126,11 +127,17 @@ const provider = computed(() => {
   return store.getters['metamask/provider']
 })
 
+const startAvailableListener = () => {
+  setInterval(() => {
+    store.dispatch('metamask/getDripAvailable')
+  }, 5000)
+}
+
 const startFakeEarnings = () => {
   setInterval(() => {
-    available.value++
+    available.value += 0.1
     visualization.value.update(availableArray.value)
-  }, 10000)
+  }, 1000)
 }
 
 const login = async () => {
@@ -160,7 +167,7 @@ onMounted(async () => {
   visualization.value.update(availableArray.value)
 
   startFakeEarnings()
-
+  // startAvailableListener()
   window.addEventListener('resize', resizeHandler)
 })
 </script>
