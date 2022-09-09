@@ -1,7 +1,9 @@
 <template>
   <div class="PageContainer">
-    <p class="deposits">Deposits: {{ deposits.toLocaleString('en-US') }}</p>
-    <p class="available">Availabe: {{ available.toLocaleString('en-US') }}</p>
+    <div class="DepositContainer">
+      <img class="dripLogo" :src="dripLogo" alt="" />
+      <p class="deposits">{{ deposits.toLocaleString('en-US') }} drip</p>
+    </div>
     <div class="background" :style="backgroundStyle"></div>
     <svg id="svg"></svg>
     <img class="spout" :src="faucetSpout" alt="" />
@@ -14,6 +16,7 @@ import * as d3 from 'd3'
 
 import background from '@/assets/background.png'
 import faucetSpout from '@/assets/faucet-spout.png'
+import dripLogo from '@/assets/drip-logo.png'
 
 const store = useStore()
 
@@ -227,18 +230,29 @@ onMounted(async () => {
   width: 100%;
   height: 100%;
 }
-.available {
-  position: absolute;
-  left: 1.5rem;
-  top: 5.5rem;
-  color: black;
-  z-index: 1;
-}
 .deposits {
-  position: absolute;
-  left: 1.5rem;
-  top: 7.5rem;
+  font-size: 1.5rem;
+  font-family: $title-font;
+  white-space: nowrap;
+}
+.dripLogo {
+  height: 2rem;
+}
+.DepositContainer {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
   color: black;
   z-index: 1;
+  background: #ececec;
+  padding: 0.25rem 1rem;
+  border-radius: 2.5rem;
+  box-shadow: inset 0px 4px 4px rgba(0, 0, 0, 0.25);
+  border: 1px solid #c8c8c8;
+  position: absolute;
+  left: 50%;
+  top: 9.5rem;
+  transform: translateX(-50%);
+  // width: 100%;
 }
 </style>
