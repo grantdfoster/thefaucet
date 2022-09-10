@@ -8,9 +8,9 @@
     <svg id="svg">
       <defs>
         <linearGradient id="gradient" gradientTransform="rotate(90)">
-          <stop offset="0%" style="stop-color: #85ccff; stop-opacity: 0" />
-          <stop offset="50%" style="stop-color: #85ccff; stop-opacity: 0.35" />
-          <stop offset="100%" style="stop-color: #85ccff; stop-opacity: 1" />
+          <stop offset="0%" style="stop-color: #5997ac; stop-opacity: 0" />
+          <stop offset="50%" style="stop-color: #5997ac; stop-opacity: 0.35" />
+          <stop offset="100%" style="stop-color: #5997ac; stop-opacity: 1" />
         </linearGradient>
       </defs>
     </svg>
@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, useStore, ref } from '@nuxtjs/composition-api'
+import { onMounted, computed, useStore, ref, watch } from '@nuxtjs/composition-api'
 import * as d3 from 'd3'
 
 import background from '@/assets/background.png'
@@ -29,6 +29,8 @@ import dripLogo from '@/assets/drip-logo.png'
 const store = useStore()
 const visualization = ref(null)
 const simulation = ref(null)
+const interval = ref(null)
+const waterSpeed = ref(250)
 
 const dotRadius = computed(() => {
   return store.getters['window/isMobile'] ? 25 : 35
@@ -36,11 +38,9 @@ const dotRadius = computed(() => {
 const pointerRadius = computed(() => {
   return store.getters['window/isMobile'] ? 100 : 160
 })
-
 const available = computed(() => {
   return store.getters['metamask/dripAvailable']
 })
-
 const deposits = computed(() => {
   return store.getters['metamask/dripDeposited']
 })
@@ -58,22 +58,13 @@ const initVisualization = () => {
   const svg = d3.select(document.getElementById('svg'))
   svg.on('mousemove', mousemove).on('touchmove', touchmove)
 
-  const grad = svg
-    .append('defs')
-    .append('linearGradient')
-    .attr('id', 'grad')
-    .attr('x1', '0%')
-    .attr('x2', '0%')
-    .attr('y1', '0%')
-    .attr('y2', '100%')
-
   simulation.value = d3
     .forceSimulation()
     .alphaTarget(0.3)
     .velocityDecay(0.4)
     .force('x', d3.forceX((d) => (d.id === 'pointer' ? null : window.innerWidth / 2)).strength(0.01))
-    .force('y', d3.forceY((d) => (d.id === 'pointer' ? null : window.innerHeight)).strength(0.04))
-    .force('collide', d3.forceCollide(getRadius).iterations(3))
+    .force('y', d3.forceY((d) => (d.id === 'pointer' ? null : window.innerHeight)).strength(0.03))
+    .force('collide', d3.forceCollide(getRadius).iterations(5))
     .on('tick', ticked)
 
   let node = svg.append('g').selectAll('circle')
@@ -140,7 +131,7 @@ const initVisualization = () => {
   }
 
   function getStroke(dot) {
-    return dot.id === 'pointer' ? 'none' : '#85ccff'
+    return dot.id === 'pointer' ? 'none' : '#5997AC'
   }
 
   visualization.value = Object.assign(svg.node(), {
@@ -167,13 +158,47 @@ const initVisualization = () => {
 const provider = computed(() => {
   return store.getters['metamask/provider']
 })
+const walletAddress = computed(() => {
+  return store.getters['metamask/walletAddress']
+})
 
 const startAvailableListener = () => {
-  setInterval(() => {
+  interval.value = setInterval(() => {
     store.dispatch('metamask/getDripAvailable')
-    visualization.value.update(availableArray.value)
   }, 3000)
 }
+
+watch(available, async (_new, _old) => {
+  if (visualization.value) {
+    if (!_old) {
+      // faucet is loading from empty state, so stream water!
+      const dots = availableArray.value.filter((d) => !['pointer', 'remainder'].includes(d.id))
+      const others = availableArray.value.filter((d) => ['pointer', 'remainder'].includes(d.id))
+
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms))
+      }
+
+      async function loadDrip() {
+        const payload = []
+        for (const dot of dots) {
+          payload.push(dot)
+          visualization.value.update(payload)
+          await sleep(waterSpeed.value)
+
+          if (dots.indexOf(dot) === dots.length - 1) {
+            payload.push(...others)
+            visualization.value.update(payload)
+          }
+        }
+      }
+
+      await loadDrip()
+    }
+  } else {
+    visualization.value.update(availableArray.value)
+  }
+})
 
 const login = async () => {
   if (provider.value) {
@@ -202,11 +227,16 @@ const resizeHandler = () => {
   simulation.value.force('y', d3.forceY((d) => (d.id === 'pointer' ? null : window.innerHeight)).strength(0.04))
 }
 
+watch(walletAddress, (_new, _old) => {
+  if (!_new && interval.value) {
+    clearInterval(interval.value)
+  }
+})
+
 onMounted(async () => {
-  await login()
   initVisualization()
+  await login()
   startAvailableListener()
-  visualization.value.update(availableArray.value)
   window.addEventListener('resize', resizeHandler)
 })
 </script>

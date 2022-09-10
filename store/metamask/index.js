@@ -66,7 +66,6 @@ export const actions = {
 
         // set watcher on accounts changed
         ethereum.on('accountsChanged', async () => {
-          console.log('accounts changed...')
           const signer = provider.getSigner()
           const address = await signer.getAddress()
           commit('setWalletAddress', address)
@@ -75,7 +74,6 @@ export const actions = {
         // set watcher on provider changed
         provider.on('network', (_newNetwork, _oldNetwork) => {
           if (_oldNetwork) {
-            console.log('network changed...')
             const delayTime = 500
             this.app.$toast.info('Switching Networks...').goAway(delayTime)
             setTimeout(() => {
@@ -132,20 +130,6 @@ export const actions = {
     const floatBalance = parseFloat(formattedBalance)
     commit('setDripDeposited', floatBalance)
   },
-  // async approveUsdc({ state, getters }, amount) {
-  //   const { tokenPrice } = state
-  //   const { provider } = getters
-
-  //   const abi = require(`@/contracts/abi/USDC_TOKEN.json`)
-  //   const contractAddress = process.env.USDCTOKEN
-  //   const contract = new ethers.Contract(contractAddress, abi, provider.getSigner())
-  //   const decimals = await contract.decimals()
-  //   const usdcToApprove = amount * tokenPrice
-  //   const usdcBig = ethers.utils.parseUnits(usdcToApprove.toString(), decimals)
-  //   const approveReceipt = await contract.approve(process.env.SALECONTRACT, usdcBig)
-  //   const approveTx = await approveReceipt.wait(1)
-  //   return approveTx
-  // },
   disconnect({ commit }) {
     if (window?.ethereum?.disconnect) window.ethereum.disconnect()
     commit('setWalletAddress', null)
