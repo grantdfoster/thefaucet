@@ -30,7 +30,7 @@ const store = useStore()
 const visualization = ref(null)
 const simulation = ref(null)
 const interval = ref(null)
-const waterSpeed = ref(250)
+const waterSpeed = ref(100)
 
 const dotRadius = computed(() => {
   return store.getters['window/isMobile'] ? 25 : 35
@@ -71,15 +71,19 @@ const initVisualization = () => {
 
   function mousemove(event) {
     const _node = simulation.value.nodes().find((n) => n.id === 'pointer')
-    _node.fx = event.clientX
-    _node.fy = event.clientY
+    if (_node) {
+      _node.fx = event.clientX
+      _node.fy = event.clientY
+    }
   }
 
   function touchmove(event) {
-    const touch = event.touches[0]
     const _node = simulation.value.nodes().find((n) => n.id === 'pointer')
-    _node.fx = touch.clientX
-    _node.fy = touch.clientY
+    if (_node) {
+      const touch = event.touches[0]
+      _node.fx = touch.clientX
+      _node.fy = touch.clientY
+    }
   }
 
   function ticked() {
@@ -168,7 +172,14 @@ const startAvailableListener = () => {
   }, 3000)
 }
 
+watch(walletAddress, (_new, _old) => {
+  if (!_new && interval.value) {
+    clearInterval(interval.value)
+  }
+})
+
 watch(available, async (_new, _old) => {
+  console.log('available changed: ', available.value)
   if (visualization.value) {
     if (!_old) {
       // faucet is loading from empty state, so stream water!
@@ -194,9 +205,9 @@ watch(available, async (_new, _old) => {
       }
 
       await loadDrip()
+    } else {
+      visualization.value.update(availableArray.value)
     }
-  } else {
-    visualization.value.update(availableArray.value)
   }
 })
 
@@ -226,12 +237,6 @@ const resizeHandler = () => {
   simulation.value.force('x', d3.forceX((d) => (d.id === 'pointer' ? null : window.innerWidth / 2)).strength(0.01))
   simulation.value.force('y', d3.forceY((d) => (d.id === 'pointer' ? null : window.innerHeight)).strength(0.04))
 }
-
-watch(walletAddress, (_new, _old) => {
-  if (!_new && interval.value) {
-    clearInterval(interval.value)
-  }
-})
 
 onMounted(async () => {
   initVisualization()
