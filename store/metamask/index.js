@@ -43,6 +43,18 @@ export const actions = {
       params: [state.binanceSmartChain],
     })
   },
+  async initProvider({ commit }) {
+    if (window.ethereum) {
+      const ethereum = window.ethereum
+      const provider = new providers.Web3Provider(ethereum, 'any')
+      try {
+        const network = await provider.getNetwork()
+        commit('setNetwork', Object.freeze(network))
+      } catch (e) {
+        console.error('initProvider Error: ', e)
+      }
+    }
+  },
   async connectMetamask({ commit, dispatch }) {
     if (window.ethereum) {
       const ethereum = window.ethereum
@@ -142,7 +154,9 @@ export const actions = {
 export const getters = {
   correctNetwork: (state) => {
     const { network, binanceSmartChain } = state
-    return network?.chainId === parseInt(binanceSmartChain?.chainId)
+    const bool = network?.chainId === parseInt(binanceSmartChain?.chainId)
+    console.log('correct network: ', bool)
+    return bool
   },
   provider: () => {
     if (!window.ethereum) return null

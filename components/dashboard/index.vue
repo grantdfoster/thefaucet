@@ -1,8 +1,8 @@
 <template>
   <div class="DashboardComponent">
     <transition-group name="fade">
-      <!-- <div v-if="showDashboard" key="gradient" class="gradient"></div> -->
-      <div v-if="showDashboard" key="carousel" class="carousel">
+      <div v-if="showDashboard" key="gradient" class="gradient"></div>
+      <div v-show="showDashboard" key="carousel" class="carousel">
         <VueSlickCarousel ref="carousel" v-bind="slickSettings" @afterChange="afterChange" @beforeChange="beforeChange">
           <DashboardMenu :active="currentSlide === 0" :changing="changing" @close="closeDash" />
           <DashboardAbout :active="currentSlide === 1" :changing="changing" @close="closeDash" />
@@ -11,7 +11,7 @@
       </div>
     </transition-group>
     <div :class="`Toolbar ${showDashboard ? 'Toolbar__active' : null}`">
-      <div v-if="showDashboard" class="Toolbar__inner">
+      <div v-show="showDashboard" class="Toolbar__inner">
         <div
           :class="`cell ${currentSlide === 0 ? 'cell__current' : null}`"
           @click="() => goTo(0)"
@@ -43,15 +43,12 @@
           <span v-else class="cell__icon material-icons-outlined"> settings </span>
         </div>
       </div>
-      <div v-else class="Toolbar__basic" @click="openDash">
-        <p class="messaging">Press Spacebar for Main Menu</p>
-      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, reactive } from '@nuxtjs/composition-api'
+import { onMounted, ref, reactive, computed, useStore } from '@nuxtjs/composition-api'
 
 const emit = defineEmits(['toggled'])
 
@@ -62,13 +59,19 @@ const props = defineProps({
   },
 })
 
+const store = useStore()
+
 const changing = ref(false)
 
 const showManage = ref(false)
 
 const carousel = ref(null)
-const showDashboard = ref(false)
-const currentSlide = ref(null)
+
+const showDashboard = computed(() => {
+  return store.getters['dashboard/isOpen']
+})
+
+const currentSlide = ref(0)
 const hovered = ref(null)
 
 const iconHovered = (icon) => {
@@ -89,37 +92,16 @@ const afterChange = () => {
   }, 250)
 }
 
-const keyListener = (e) => {
-  if (e.key === ' ' || e.code === 'Space' || e.which === 32) {
-    showDashboard.value ? closeDash() : openDash()
-  }
-}
-
-const openDash = () => {
-  // store.dispatch('metamask/fetchBalances')
-
-  changing.value = true
-  setTimeout(() => {
-    changing.value = false
-  }, 1000)
-
-  if (props.assets) slickSettings.initialSlide = 1
-  currentSlide.value = slickSettings.initialSlide
-
-  showDashboard.value = true
-  emit('toggled', showDashboard.value)
-}
-
 const closeDash = () => {
   slickSettings.initialSlide = currentSlide.value
   currentSlide.value = null
   showManage.value = true
-  showDashboard.value = false
+  store.dispatch('dashboard/setOpen', false)
   emit('toggled', showDashboard.value)
 }
 
 onMounted(() => {
-  document.addEventListener('keydown', keyListener)
+  // document.addEventListener('keydown', keyListener)
 })
 
 const goTo = (_index) => {
@@ -143,7 +125,7 @@ const slickSettings = reactive({
   slidesToScroll: 1,
   initialSlide: 0,
   centerMode: true,
-  centerPadding: '25%',
+  centerPadding: '0%',
   autoplay: false,
   speed: 650,
 })
@@ -168,7 +150,7 @@ const slickSettings = reactive({
   padding: 0.5rem 0.75rem;
   color: rgb(115, 115, 115);
   border-radius: 0.75rem;
-  bottom: -0.5rem;
+  bottom: -2rem;
   transition: 0.5s bottom ease-in-out;
   z-index: 100;
   box-shadow: $box-shadow-default;
@@ -192,7 +174,7 @@ const slickSettings = reactive({
     width: 100%;
   }
   &__active {
-    bottom: 4rem;
+    bottom: 2rem;
     padding: 0.5rem 0.75rem;
   }
   &__light {
@@ -209,14 +191,15 @@ const slickSettings = reactive({
   &__icon {
     transition: all 0.3s ease-in-out;
     cursor: pointer;
-    font-size: 1.5rem;
+    font-size: 2rem;
+    color: rgba(0, 0, 0, 0.35);
     &.selected {
       font-size: 2.5rem;
-      color: black;
+      color: rgb(0, 0, 0);
     }
     &.hovered {
-      font-size: 2rem;
-      color: black;
+      font-size: 2.25rem;
+      color: rgb(0, 0, 0);
     }
   }
 }
@@ -231,7 +214,7 @@ const slickSettings = reactive({
 
 ::v-deep .slick-slide {
   display: flex !important; // need important here!
-  min-height: 70vh;
+  min-height: 100vh;
   align-items: center !important;
   justify-content: center !important;
   position: relative !important;

@@ -2,15 +2,18 @@
   <div>
     <Nav />
     <Nuxt />
-    <!-- <Dashboard /> -->
+    <Dashboard />
   </div>
 </template>
 
 <style lang="scss">
+// this app will not scroll
 html,
 body {
   background: white;
-  user-select: none;
+  width: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
 }
 
 html,

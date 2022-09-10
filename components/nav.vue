@@ -2,8 +2,8 @@
   <div class="Navigation">
     <div class="Navigation__inner">
       <div class="Navigation__inner--cell">
-        <ButtonLogo>
-          <span class="material-icons-outlined close"> menu </span>
+        <ButtonLogo @click.native="toggleDash">
+          <span class="material-icons-outlined menu"> menu </span>
         </ButtonLogo>
       </div>
       <div class="Navigation__inner--cell">
@@ -32,10 +32,10 @@
             <span class="material-icons-outlined"> error_outline </span>
           </ButtonLogo>
           <ButtonLogo v-if="correctNetwork && !walletAddress" @click.native="() => (showAuthenticator = true)">
-            <span class="material-icons-outlined"> login </span>
+            <span class="material-icons-outlined wallet__unconnected"> wallet </span>
           </ButtonLogo>
           <ButtonLogo v-if="correctNetwork && walletAddress" @click.native="disconnect">
-            <span class="material-icons-outlined close"> wallet </span>
+            <span class="material-icons-outlined close wallet__connected"> wallet </span>
           </ButtonLogo>
         </div>
       </transition>
@@ -73,6 +73,9 @@ export default Vue.extend({
     isMobile() {
       return this.$store.getters['window/isMobile']
     },
+    isDashOpen() {
+      return this.$store.getters['dashboard/isOpen']
+    },
   },
   methods: {
     async changeNetwork() {
@@ -80,6 +83,9 @@ export default Vue.extend({
     },
     disconnect() {
       this.$store.dispatch('metamask/disconnect')
+    },
+    toggleDash() {
+      this.$store.dispatch('dashboard/setOpen', !this.isDashOpen)
     },
   },
 })
@@ -140,5 +146,17 @@ export default Vue.extend({
   @media #{$md-medium} {
     display: initial;
   }
+}
+.wallet {
+  &__unconnected {
+    font-size: 1.5rem;
+  }
+  &__connected {
+    font-size: 1.5rem;
+    color: #5997ac;
+  }
+}
+.menu {
+  font-size: 1.5rem;
 }
 </style>

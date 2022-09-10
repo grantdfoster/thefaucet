@@ -1,9 +1,9 @@
 <template>
   <div class="modal">
     <div class="modal__panel">
-      <div class="modal__panel--close" @click="emit('close')">
-        <span class="material-icons-outlined"> close </span>
-      </div>
+      <transition name="fade">
+        <DashboardClose class="modal__panel--close" @click.native="$emit('close')" />
+      </transition>
       <div class="modal__panel--web3">
         <h3 class="titletext">Connect</h3>
         <ButtonPrimary text="Metamask" @click.native="connect">
@@ -58,6 +58,7 @@ const connect = async () => {
   justify-content: center;
   z-index: 10;
   &__panel {
+    background: white;
     box-shadow: $box-shadow-default;
     position: relative;
     border-radius: 1rem;
@@ -89,5 +90,6 @@ const connect = async () => {
   line-height: 2.0625rem;
   font-size: 1.8rem;
   font-family: $title-font;
+  text-align: center;
 }
 </style>

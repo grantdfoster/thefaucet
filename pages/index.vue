@@ -1,9 +1,5 @@
 <template>
   <div class="PageContainer">
-    <div class="DepositContainer">
-      <img class="dripLogo" :src="dripLogo" alt="" />
-      <p class="deposits">{{ deposits.toLocaleString('en-US') }} drip</p>
-    </div>
     <div class="background" :style="backgroundStyle"></div>
     <svg id="svg">
       <defs>
@@ -14,6 +10,10 @@
         </linearGradient>
       </defs>
     </svg>
+    <div class="DepositContainer">
+      <img class="dripLogo" :src="dripLogo" alt="" />
+      <p class="deposits">{{ deposits.toLocaleString('en-US') }} drip</p>
+    </div>
     <img class="spout" :src="faucetSpout" alt="" />
   </div>
 </template>
@@ -173,6 +173,7 @@ const startAvailableListener = () => {
 }
 
 watch(walletAddress, (_new, _old) => {
+  if (_new) startAvailableListener()
   if (!_new && interval.value) {
     clearInterval(interval.value)
   }
@@ -214,7 +215,7 @@ watch(available, async (_new, _old) => {
 const login = async () => {
   if (provider.value) {
     const addresses = await provider.value.listAccounts()
-    if (addresses.length) await store.dispatch('metamask/connectMetamask')
+    // if (addresses.length) await store.dispatch('metamask/connectMetamask')
   }
 }
 
@@ -241,7 +242,6 @@ const resizeHandler = () => {
 onMounted(async () => {
   initVisualization()
   await login()
-  startAvailableListener()
   window.addEventListener('resize', resizeHandler)
 })
 </script>
@@ -284,7 +284,6 @@ onMounted(async () => {
   align-items: center;
   gap: 0.5rem;
   color: black;
-  z-index: 1;
   background: #ececec;
   padding: 0.25rem 1rem;
   border-radius: 2.5rem;

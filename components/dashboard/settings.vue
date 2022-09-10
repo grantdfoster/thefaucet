@@ -36,11 +36,11 @@ const eventListener = () => {
   const _centerOfWindow = window.innerWidth / 2
 
   const _difference = Math.abs(_centerOfPanelX - _centerOfWindow)
-  const _scaleFactor = scale(_difference, 0, _centerOfWindow, 1, 0.35)
-  const _opacityFactor = scale(_difference, 0, _centerOfWindow, 1, 0.7)
+  const _scaleFactor = scale(_difference, 0, _centerOfWindow, 1, 0.8)
+  // const _opacityFactor = scale(_difference, 0, _centerOfWindow, 1, 0.7)
 
   _panel.style.transform = `scale(${_scaleFactor})`
-  _panel.style.opacity = _opacityFactor
+  // _panel.style.opacity = _opacityFactor
 }
 
 onMounted(() => {
@@ -69,7 +69,6 @@ const props = defineProps({
 }
 .inner {
   border-radius: 1rem;
-  width: 52.9375rem;
   padding: 2rem 2rem 4rem;
   gap: 4rem;
 }
@@ -78,6 +77,8 @@ const props = defineProps({
   font-weight: 500;
   position: relative;
   z-index: 2;
+  text-align: center;
+  font-family: $title-font;
 }
 .description {
   font-size: 1rem;
@@ -85,6 +86,7 @@ const props = defineProps({
   line-height: 1.5rem;
   position: relative;
   z-index: 2;
+  text-align: center;
 }
 .logo {
   height: 12.25rem;
