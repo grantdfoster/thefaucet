@@ -7,7 +7,12 @@
       <div class="inner">
         <div>
           <h3 class="title">About</h3>
-          <p class="description">Some about text</p>
+          <!-- <br /> -->
+          <hr class="divider" />
+          <p class="description">
+            The Faucet is a high-yield web3 contract that operates similar to a certificate of deposit in traditional
+            banking.Leveraging the power of compound interest, achieve financial freedom through passive daily cashflow.
+          </p>
         </div>
       </div>
     </DashboardTemplate>
@@ -76,6 +81,7 @@ const props = defineProps({
   z-index: 2;
   text-align: center;
   font-family: $title-font;
+  color: black;
 }
 .description {
   font-size: 1rem;
@@ -83,7 +89,8 @@ const props = defineProps({
   line-height: 1.5rem;
   position: relative;
   z-index: 2;
-  text-align: center;
+  // text-align: center;
+  color: black;
 }
 .logo {
   height: 12.25rem;
@@ -101,5 +108,11 @@ const props = defineProps({
   align-items: flex-end;
   display: flex;
   flex-direction: row-reverse;
+}
+.divider {
+  height: 1px;
+  width: 50%;
+  transform: translateX(-50%);
+  margin: 0.75rem 50%;
 }
 </style>

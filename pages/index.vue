@@ -33,7 +33,7 @@ const interval = ref(null)
 const waterSpeed = ref(100)
 
 const dotRadius = computed(() => {
-  return store.getters['window/isMobile'] ? 25 : 35
+  return store.getters['window/isMobile'] ? 22 : 35
 })
 const pointerRadius = computed(() => {
   return store.getters['window/isMobile'] ? 100 : 160
@@ -215,7 +215,7 @@ watch(available, async (_new, _old) => {
 const login = async () => {
   if (provider.value) {
     const addresses = await provider.value.listAccounts()
-    // if (addresses.length) await store.dispatch('metamask/connectMetamask')
+    if (addresses.length) await store.dispatch('metamask/connectMetamask')
   }
 }
 
