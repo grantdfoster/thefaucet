@@ -183,21 +183,22 @@ watch(available, async (_new, _old) => {
     if (!_old) {
       // faucet is loading from empty state, so stream water!
       const dots = availableArray.value.filter((d) => !['pointer', 'remainder'].includes(d.id))
-      const others = availableArray.value.filter((d) => ['pointer', 'remainder'].includes(d.id))
+      const remainder = availableArray.value.find((d) => d.id === 'remainder')
+      const pointer = availableArray.value.find((d) => d.id === 'pointer')
 
       function sleep(ms) {
         return new Promise((resolve) => setTimeout(resolve, ms))
       }
 
       async function loadDrip() {
-        const payload = []
+        const payload = [pointer]
         for (const dot of dots) {
           payload.push(dot)
           visualization.value.update(payload)
           await sleep(waterSpeed.value)
 
           if (dots.indexOf(dot) === dots.length - 1) {
-            payload.push(...others)
+            payload.push(remainder)
             visualization.value.update(payload)
           }
         }
