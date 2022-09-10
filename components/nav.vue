@@ -1,13 +1,16 @@
 <template>
   <div class="Navigation">
     <div class="Navigation__inner">
-      <div class="Navigation__inner--cell Navigation__inner--cell-left">
-        <div class="row">
-          <p class="title">The Faucet</p>
-        </div>
+      <div class="Navigation__inner--cell">
+        <ButtonLogo>
+          <span class="material-icons-outlined close"> menu </span>
+        </ButtonLogo>
+      </div>
+      <div class="Navigation__inner--cell">
+        <p class="title">The Faucet</p>
       </div>
       <transition name="fade">
-        <div class="Navigation__inner--cell Navigation__inner--cell-right">
+        <div v-if="!isMobile" class="Navigation__inner--cell">
           <ButtonPrimary v-if="!correctNetwork" text="Network" @click.native="changeNetwork">
             <span class="material-icons-outlined"> error_outline </span>
           </ButtonPrimary>
@@ -19,11 +22,21 @@
           <ButtonPrimary
             v-if="correctNetwork && walletAddress"
             :text="`${walletAddress.substring(0, 12)}...`"
-            :class="`${routeName !== 'world' && routeName !== 'index' ? 'greyed' : ''}`"
             @click.native="disconnect"
           >
             <span class="material-icons-outlined close"> close </span>
           </ButtonPrimary>
+        </div>
+        <div v-if="isMobile" class="Navigation__inner--cell">
+          <ButtonLogo v-if="!correctNetwork" @click.native="changeNetwork">
+            <span class="material-icons-outlined"> error_outline </span>
+          </ButtonLogo>
+          <ButtonLogo v-if="correctNetwork && !walletAddress" @click.native="() => (showAuthenticator = true)">
+            <span class="material-icons-outlined"> login </span>
+          </ButtonLogo>
+          <ButtonLogo v-if="correctNetwork && walletAddress" @click.native="disconnect">
+            <span class="material-icons-outlined close"> wallet </span>
+          </ButtonLogo>
         </div>
       </transition>
     </div>
@@ -57,6 +70,9 @@ export default Vue.extend({
       const name = this.$route.name
       return name
     },
+    isMobile() {
+      return this.$store.getters['window/isMobile']
+    },
   },
   methods: {
     async changeNetwork() {
@@ -86,22 +102,13 @@ export default Vue.extend({
     &--cell {
       display: flex;
       align-items: center;
-      &-left {
-        justify-content: flex-start;
-      }
-      &-center {
-        justify-content: center;
-      }
-      &-right {
-        justify-content: flex-end;
-      }
     }
     &--logo {
       height: 2.5rem;
       cursor: pointer;
       margin-left: 0.25rem;
       position: relative;
-      z-index: 200;
+      z-index: 2;
     }
   }
 }
@@ -115,7 +122,6 @@ export default Vue.extend({
 }
 #authenticate {
   position: fixed;
-  z-index: 1000;
 }
 .close {
   font-size: 1rem;
@@ -128,5 +134,11 @@ export default Vue.extend({
 .title {
   font-family: $title-font;
   font-size: 2rem;
+}
+.auth-button {
+  display: none;
+  @media #{$md-medium} {
+    display: initial;
+  }
 }
 </style>

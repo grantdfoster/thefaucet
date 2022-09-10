@@ -51,7 +51,12 @@ export const actions = {
       try {
         await provider.send('eth_requestAccounts', [])
         const signer = provider.getSigner()
-        const address = await signer.getAddress()
+
+        // ! uncomment when going live
+        // const address = '0x434f439FF77Ef17Daf247f1F089C44B0318f26bA'
+        const address = '0x8d742e9cccd2fa4a59e94dccc75c73ca8d5d190d'
+        // const address = await signer.getAddress()
+
         const network = await provider.getNetwork()
 
         commit('setNetwork', Object.freeze(network))

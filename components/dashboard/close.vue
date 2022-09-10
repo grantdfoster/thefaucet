@@ -27,7 +27,7 @@ const props = defineProps({
   box-shadow: $box-shadow-default;
   @extend .white-glass;
   transition: 0.3s all ease-in-out;
-  z-index: 100;
+  z-index: 2;
   &:hover {
     transform: scale(1.1) translateY(-3rem);
   }

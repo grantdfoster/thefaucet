@@ -56,7 +56,7 @@ const connect = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 101;
+  z-index: 10;
   &__panel {
     box-shadow: $box-shadow-default;
     position: relative;
@@ -87,6 +87,7 @@ const connect = async () => {
 .titletext {
   font-weight: 500;
   line-height: 2.0625rem;
-  font-size: 1.6rem;
+  font-size: 1.8rem;
+  font-family: $title-font;
 }
 </style>

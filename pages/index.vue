@@ -5,7 +5,15 @@
       <p class="deposits">{{ deposits.toLocaleString('en-US') }} drip</p>
     </div>
     <div class="background" :style="backgroundStyle"></div>
-    <svg id="svg"></svg>
+    <svg id="svg">
+      <defs>
+        <linearGradient id="gradient" gradientTransform="rotate(90)">
+          <stop offset="0%" style="stop-color: #85ccff; stop-opacity: 0" />
+          <stop offset="50%" style="stop-color: #85ccff; stop-opacity: 0.35" />
+          <stop offset="100%" style="stop-color: #85ccff; stop-opacity: 1" />
+        </linearGradient>
+      </defs>
+    </svg>
     <img class="spout" :src="faucetSpout" alt="" />
   </div>
 </template>
@@ -19,9 +27,6 @@ import faucetSpout from '@/assets/faucet-spout.png'
 import dripLogo from '@/assets/drip-logo.png'
 
 const store = useStore()
-
-const blue = ref('#cce8ff')
-
 const visualization = ref(null)
 const simulation = ref(null)
 
@@ -52,6 +57,15 @@ const backgroundStyle = computed(() => {
 const initVisualization = () => {
   const svg = d3.select(document.getElementById('svg'))
   svg.on('mousemove', mousemove).on('touchmove', touchmove)
+
+  const grad = svg
+    .append('defs')
+    .append('linearGradient')
+    .attr('id', 'grad')
+    .attr('x1', '0%')
+    .attr('x2', '0%')
+    .attr('y1', '0%')
+    .attr('y2', '100%')
 
   simulation.value = d3
     .forceSimulation()
@@ -122,11 +136,11 @@ const initVisualization = () => {
   }
 
   function getFill(dot) {
-    return dot.id === 'pointer' ? 'transparent' : blue.value
+    return dot.id === 'pointer' ? 'transparent' : 'url(#gradient)'
   }
 
   function getStroke(dot) {
-    return dot.id === 'pointer' ? 'none' : 'gray'
+    return dot.id === 'pointer' ? 'none' : '#85ccff'
   }
 
   visualization.value = Object.assign(svg.node(), {
@@ -161,13 +175,6 @@ const startAvailableListener = () => {
   }, 3000)
 }
 
-// const startFakeEarnings = () => {
-//   setInterval(() => {
-//     available.value += 0.1
-//     visualization.value.update(availableArray.value)
-//   }, 100)
-// }
-
 const login = async () => {
   if (provider.value) {
     const addresses = await provider.value.listAccounts()
@@ -200,7 +207,6 @@ onMounted(async () => {
   initVisualization()
   startAvailableListener()
   visualization.value.update(availableArray.value)
-  // startFakeEarnings()
   window.addEventListener('resize', resizeHandler)
 })
 </script>
@@ -236,12 +242,12 @@ onMounted(async () => {
   white-space: nowrap;
 }
 .dripLogo {
-  height: 2rem;
+  height: 1.5rem;
 }
 .DepositContainer {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
   color: black;
   z-index: 1;
   background: #ececec;
