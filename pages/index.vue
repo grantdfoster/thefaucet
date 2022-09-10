@@ -179,7 +179,6 @@ watch(walletAddress, (_new, _old) => {
 })
 
 watch(available, async (_new, _old) => {
-  console.log('available changed: ', available.value)
   if (visualization.value) {
     if (!_old) {
       // faucet is loading from empty state, so stream water!
