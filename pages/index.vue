@@ -10,6 +10,12 @@
         </linearGradient>
       </defs>
     </svg>
+    <ButtonPrimary class="hydrate" text="Hydrate" @click.native="hydrate">
+      <!-- <img class="icons" src="~/assets/icons/metamask.png" /> -->
+    </ButtonPrimary>
+    <ButtonPrimary class="claim" text="Claim" @click.native="claim">
+      <!-- <img class="icons" src="~/assets/icons/metamask.png" /> -->
+    </ButtonPrimary>
     <div class="DepositContainer">
       <img class="dripLogo" :src="dripLogo" alt="" />
       <p class="deposits">{{ deposits.toLocaleString('en-US') }} drip</p>
@@ -31,6 +37,17 @@ const visualization = ref(null)
 const simulation = ref(null)
 const interval = ref(null)
 const waterSpeed = ref(100)
+const moving = ref(false)
+
+const claim = () => {
+  moving.value = true
+  simulation.value.force('y', d3.forceY((d) => (d.id === 'pointer' ? null : window.innerHeight + 300)).strength(0.05))
+}
+
+const hydrate = () => {
+  moving.value = true
+  simulation.value.force('y', d3.forceY((d) => (d.id === 'pointer' ? null : -300)).strength(0.05))
+}
 
 const dotRadius = computed(() => {
   return store.getters['window/isMobile'] ? 22 : 35
@@ -97,6 +114,7 @@ const initVisualization = () => {
   }
 
   function getPositionX(dot) {
+    if (moving.value) return dot.x
     switch (dot.id) {
       case 'pointer':
         return dot.x
@@ -109,6 +127,8 @@ const initVisualization = () => {
   }
 
   function getPositionY(dot) {
+    if (moving.value) return dot.y
+
     switch (dot.id) {
       case 'pointer':
         return dot.y
@@ -294,5 +314,19 @@ onMounted(async () => {
   top: 9.5rem;
   transform: translateX(-50%);
   // width: 100%;
+}
+.hydrate {
+  position: absolute;
+  top: 5rem;
+  left: 50vw;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+.claim {
+  position: absolute;
+  bottom: 5rem;
+  left: 50vw;
+  transform: translateX(-50%);
+  z-index: 2;
 }
 </style>

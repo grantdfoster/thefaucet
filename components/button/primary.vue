@@ -28,8 +28,10 @@ const props = defineProps({
   box-shadow: $box-shadow-shallow;
   transition: all 0.3s cubic-bezier(0.2, 0.5, 0.2, 0.5);
   background: linear-gradient(90deg, #ffffff 0%, #eeeeee 100%);
-  &:hover {
-    transform: scale($zoom-default);
+  @media #{$md-medium} {
+    &:hover {
+      transform: scale($zoom-default);
+    }
   }
 }
 </style>
